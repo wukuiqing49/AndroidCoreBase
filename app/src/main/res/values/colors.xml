@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="demo_bg">#F7F8FA</color>
+    <color name="demo_surface">#FFFFFF</color>
+    <color name="demo_icon_bg">#E8F0FE</color>
+    <color name="demo_primary_text">#182033</color>
+    <color name="demo_secondary_text">#5E6678</color>
+    <color name="demo_accent">#2457D6</color>
+    <color name="demo_code_normal_bg">#FFFFFF</color>
+    <color name="demo_code_focused_bg">#EEF4FF</color>
+    <color name="demo_code_filled_bg">#F4F7FB</color>
+    <color name="demo_code_normal_border">#D7DDE8</color>
+    <color name="demo_code_filled_border">#B7C1D3</color>
+</resources>

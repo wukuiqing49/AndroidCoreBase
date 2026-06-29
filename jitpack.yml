@@ -1,0 +1,5 @@
+jdk:
+  - openjdk17
+
+install:
+  - ./gradlew :core_base:publishReleasePublicationToMavenLocal -PPOM_GROUP_ID=com.github.wukuiqing49.AndroidCoreBase -PPOM_VERSION=$VERSION -PGITHUB_REPOSITORY=wukuiqing49/AndroidCoreBase

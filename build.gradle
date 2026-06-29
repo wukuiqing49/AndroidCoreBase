@@ -1,0 +1,12 @@
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+}
+
+ext.appConfig = [
+        compileSdk: 36,
+        minSdk    : 23,
+        targetSdk : 36,
+        jvmTarget : org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+]
