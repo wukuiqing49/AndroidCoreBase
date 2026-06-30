@@ -93,14 +93,14 @@ README.md
 建议再验证一次本地 Maven 发布：
 
 ```bash
-./gradlew :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.local" "-PPOM_VERSION=v1.0.2"
+./gradlew :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.local" "-PPOM_VERSION=v1.0.3"
 ```
 
 Windows PowerShell：
 
 ```powershell
 .\gradlew.bat :core_base:compileDebugKotlin
-.\gradlew.bat :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.local" "-PPOM_VERSION=v1.0.2"
+.\gradlew.bat :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.local" "-PPOM_VERSION=v1.0.3"
 ```
 
 如果这两步失败，不要打 tag 发布。
@@ -114,7 +114,7 @@ JitPack 只读取 GitHub 上的代码，本地未提交内容不会发布。
 ```bash
 git status
 git add .
-git commit -m "release core_base 1.0.2"
+git commit -m "release core_base 1.0.3"
 git push origin master
 ```
 
@@ -171,11 +171,11 @@ dependencyResolutionManagement {
 
 ```gradle
 dependencies {
-    implementation "com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.2"
+    implementation "com.github.wukuiqing49:AndroidCoreBase:v1.0.3"
 }
 ```
 
-注意：版本号要和 Git tag 完全一致，例如 tag 是 `v1.0.1`，依赖里也写 `v1.0.1`。
+注意：版本号要和 Git tag 完全一致，例如 tag 是 `v1.0.2`，依赖里也写 `v1.0.2`。
 
 ## GitHub Packages 发布
 
@@ -227,13 +227,13 @@ GITHUB_REPOSITORY=wukuiqing49/AndroidCoreBase
 发布命令：
 
 ```bash
-./gradlew :core_base:publishReleasePublicationToGitHubPackagesRepository "-PPOM_GROUP_ID=com.github.wukuiqing49.AndroidCoreBase" "-PPOM_VERSION=v1.0.2"
+./gradlew :core_base:publishReleasePublicationToGitHubPackagesRepository "-PPOM_GROUP_ID=com.github.wukuiqing49" "-PPOM_ARTIFACT_ID=AndroidCoreBase" "-PPOM_VERSION=v1.0.3"
 ```
 
 Windows PowerShell：
 
 ```powershell
-.\gradlew.bat :core_base:publishReleasePublicationToGitHubPackagesRepository "-PPOM_GROUP_ID=com.github.wukuiqing49.AndroidCoreBase" "-PPOM_VERSION=v1.0.2"
+.\gradlew.bat :core_base:publishReleasePublicationToGitHubPackagesRepository "-PPOM_GROUP_ID=com.github.wukuiqing49" "-PPOM_ARTIFACT_ID=AndroidCoreBase" "-PPOM_VERSION=v1.0.3"
 ```
 
 ### 使用方引用 GitHub Packages
@@ -261,7 +261,7 @@ dependencyResolutionManagement {
 
 ```gradle
 dependencies {
-    implementation "com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.2"
+    implementation "com.github.wukuiqing49:AndroidCoreBase:v1.0.3"
 }
 ```
 
@@ -294,7 +294,7 @@ v1.1.0-beta01
 JitPack 构建成功后，建议新建或打开一个外部测试项目验证：
 
 ```gradle
-implementation "com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.2"
+implementation "com.github.wukuiqing49:AndroidCoreBase:v1.0.3"
 ```
 
 至少验证：
@@ -330,7 +330,7 @@ consumerProguardFiles "consumer-rules.pro"
 先本地执行：
 
 ```bash
-./gradlew :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.local" "-PPOM_VERSION=v1.0.2"
+./gradlew :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.local" "-PPOM_VERSION=v1.0.3"
 ```
 
 本地都失败，先修本地构建。
@@ -342,7 +342,7 @@ consumerProguardFiles "consumer-rules.pro"
 - 使用方是否加了 `maven { url = "https://jitpack.io" }`。
 - 依赖版本是否和 Git tag 完全一致。
 - JitPack 页面对应 tag 是否构建成功。
-- 坐标是否写成 `com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.2`。
+- 坐标是否写成 `com.github.wukuiqing49:AndroidCoreBase:v1.0.3`。
 
 ### 使用方编译缺 AndroidX 类
 

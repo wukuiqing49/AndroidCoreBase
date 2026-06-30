@@ -18,7 +18,8 @@ $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
 $versionFile = "core_base/version.properties"
-$groupId = "com.github.wukuiqing49.AndroidCoreBase"
+$groupId = "com.github.wukuiqing49"
+$artifactId = "AndroidCoreBase"
 $githubRepository = "wukuiqing49/AndroidCoreBase"
 
 function Get-VersionFromTag($tagName) {
@@ -42,17 +43,12 @@ function Get-VersionFromFile($path) {
 }
 
 function Get-NextVersion([string]$bump) {
-    $versions = New-Object System.Collections.Generic.List[version]
-
-    $fileVersion = Get-VersionFromFile $versionFile
-    if ($fileVersion) {
-        $versions.Add($fileVersion)
-    }
+    $tagVersions = New-Object System.Collections.Generic.List[version]
 
     git tag --list "v*" | ForEach-Object {
         $parsed = Get-VersionFromTag $_
         if ($parsed) {
-            $versions.Add($parsed)
+            $tagVersions.Add($parsed)
         }
     }
 
@@ -62,16 +58,32 @@ function Get-NextVersion([string]$bump) {
             $name = ($parts[1] -replace '^refs/tags/', '') -replace '\^\{\}$', ''
             $parsed = Get-VersionFromTag $name
             if ($parsed) {
-                $versions.Add($parsed)
+                $tagVersions.Add($parsed)
             }
         }
     }
 
-    if ($versions.Count -eq 0) {
+    $fileVersion = Get-VersionFromFile $versionFile
+    if ($fileVersion) {
+        $latestTagVersion = $null
+        if ($tagVersions.Count -gt 0) {
+            $latestTagVersion = $tagVersions | Sort-Object -Descending | Select-Object -First 1
+        }
+
+        $fileTag = "v$fileVersion"
+        $localFileTag = git tag --list $fileTag
+        $remoteFileTag = git ls-remote --tags $Remote "refs/tags/$fileTag"
+        if (-not $localFileTag -and -not $remoteFileTag -and
+            (-not $latestTagVersion -or $fileVersion -gt $latestTagVersion)) {
+            return "$fileVersion"
+        }
+    }
+
+    if ($tagVersions.Count -eq 0) {
         return "1.0.0"
     }
 
-    $latest = $versions | Sort-Object -Descending | Select-Object -First 1
+    $latest = $tagVersions | Sort-Object -Descending | Select-Object -First 1
     switch ($bump) {
         "major" { return "$($latest.Major + 1).0.0" }
         "minor" { return "$($latest.Major).$($latest.Minor + 1).0" }
@@ -100,6 +112,17 @@ function Replace-InFile($path, [scriptblock]$replace) {
     }
 }
 
+function Update-PublishCommand([string]$content) {
+    $content = $content `
+        -replace '"-PPOM_GROUP_ID=com\.github\.wukuiqing49\.AndroidCoreBase"', '"-PPOM_GROUP_ID=com.github.wukuiqing49"' `
+        -replace '"-PPOM_GROUP_ID=com\.github\.wukuiqing49"', '"-PPOM_GROUP_ID=com.github.wukuiqing49"'
+
+    if ($content -notmatch 'POM_ARTIFACT_ID=AndroidCoreBase') {
+        $content = $content -replace '("-PPOM_GROUP_ID=com\.github\.wukuiqing49")', '$1 "-PPOM_ARTIFACT_ID=AndroidCoreBase"'
+    }
+    return $content
+}
+
 if ([string]::IsNullOrWhiteSpace($Version)) {
     $Version = Get-NextVersion $Bump
     Write-Host "Auto version: $Version ($Bump bump)" -ForegroundColor Green
@@ -108,8 +131,7 @@ if ([string]::IsNullOrWhiteSpace($Version)) {
 }
 
 $tag = "v$Version"
-$jitpackDependency = "com.github.wukuiqing49.AndroidCoreBase:core_base:$tag"
-$githubPackagesDependency = "$groupId`:core_base:$tag"
+$jitpackDependency = "$groupId`:$artifactId`:$tag"
 
 $existingTag = git tag --list $tag
 if ($existingTag) {
@@ -133,38 +155,63 @@ $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 Replace-InFile "README.md" {
     param($content)
-    $content `
+    $content = $content `
+        -replace 'com\.github\.wukuiqing49:AndroidCoreBase:v\d+\.\d+\.\d+', $jitpackDependency `
+        -replace 'com\.github\.wukuiqing49:AndroidCoreBase:\d+\.\d+\.\d+', $jitpackDependency `
         -replace 'com\.github\.wukuiqing49\.AndroidCoreBase:core_base:v\d+\.\d+\.\d+', $jitpackDependency `
         -replace 'com\.github\.wukuiqing49\.AndroidCoreBase:core_base:\d+\.\d+\.\d+', $jitpackDependency `
         -replace 'com\.github\.wukuiqing49\.AndroidCoreBase:core_base:vx\.y\.z', $jitpackDependency `
         -replace 'AndroidCoreBase/v\d+\.\d+\.\d+', "AndroidCoreBase/$tag" `
+        -replace 'POM_GROUP_ID=com\.github\.wukuiqing49\.AndroidCoreBase', 'POM_GROUP_ID=com.github.wukuiqing49' `
         -replace 'POM_VERSION=v?\d+\.\d+\.\d+', "POM_VERSION=$tag"
+    Update-PublishCommand $content
 }
 
 Replace-InFile "docs/core_base_network_release.md" {
     param($content)
-    $content `
+    $content = $content `
+        -replace 'com\.github\.wukuiqing49:AndroidCoreBase:v\d+\.\d+\.\d+', $jitpackDependency `
+        -replace 'com\.github\.wukuiqing49:AndroidCoreBase:\d+\.\d+\.\d+', $jitpackDependency `
         -replace 'com\.github\.wukuiqing49\.AndroidCoreBase:core_base:v\d+\.\d+\.\d+', $jitpackDependency `
         -replace 'com\.github\.wukuiqing49\.AndroidCoreBase:core_base:\d+\.\d+\.\d+', $jitpackDependency `
         -replace 'com\.github\.wukuiqing49\.AndroidCoreBase:core_base:vx\.y\.z', $jitpackDependency `
         -replace 'AndroidCoreBase/v\d+\.\d+\.\d+', "AndroidCoreBase/$tag" `
+        -replace 'POM_GROUP_ID=com\.github\.wukuiqing49\.AndroidCoreBase', 'POM_GROUP_ID=com.github.wukuiqing49' `
         -replace 'POM_VERSION=v?\d+\.\d+\.\d+', "POM_VERSION=$tag"
+    Update-PublishCommand $content
 }
 
 Replace-InFile "core_base/docs/core_base_publish.md" {
     param($content)
-    $content `
+    $content = $content `
+        -replace 'com\.github\.wukuiqing49:AndroidCoreBase:v\d+\.\d+\.\d+', $jitpackDependency `
+        -replace 'com\.github\.wukuiqing49:AndroidCoreBase:\d+\.\d+\.\d+', $jitpackDependency `
         -replace 'com\.github\.wukuiqing49\.AndroidCoreBase:core_base:v\d+\.\d+\.\d+', $jitpackDependency `
         -replace 'com\.github\.wukuiqing49\.AndroidCoreBase:core_base:\d+\.\d+\.\d+', $jitpackDependency `
-        -replace 'com\.github\.wukuiqing49:core_base:v?\d+\.\d+\.\d+', $githubPackagesDependency `
+        -replace 'com\.github\.wukuiqing49:core_base:v?\d+\.\d+\.\d+', $jitpackDependency `
         -replace 'AndroidCoreBase/v\d+\.\d+\.\d+', "AndroidCoreBase/$tag" `
+        -replace 'POM_GROUP_ID=com\.github\.wukuiqing49\.AndroidCoreBase', 'POM_GROUP_ID=com.github.wukuiqing49' `
         -replace 'POM_VERSION=v?\d+\.\d+\.\d+', "POM_VERSION=$tag" `
         -replace 'release core_base v?\d+\.\d+\.\d+', "release core_base $Version"
+    Update-PublishCommand $content
+}
+
+Replace-InFile "app/build.gradle" {
+    param($content)
+    $content = $content `
+        -replace 'implementation\s+["'']com\.github\.wukuiqing49(?:\.AndroidCoreBase)?:core_base:v?\d+\.\d+\.\d+["'']\s*(\r?\n)?', '' `
+        -replace 'implementation\s+["'']com\.github\.wukuiqing49:AndroidCoreBase:v?\d+\.\d+\.\d+["'']\s*(\r?\n)?', '' `
+        -replace '(?m)^\s*//\s*implementation\s+project\(":core_base"\)\s*$', '    implementation project(":core_base")'
+
+    if ($content -notmatch 'implementation\s+project\(":core_base"\)') {
+        $content = $content -replace '(dependencies\s*\{\s*)', "`$1`r`n    implementation project(`":core_base`")"
+    }
+    return $content
 }
 
 Run ".\gradlew.bat :core_base:compileDebugKotlin"
 Run ".\gradlew.bat :app:assembleDebug"
-Run ".\gradlew.bat :core_base:publishReleasePublicationToMavenLocal `"-PPOM_GROUP_ID=$groupId`" `"-PPOM_VERSION=$tag`" `"-PGITHUB_REPOSITORY=$githubRepository`""
+Run ".\gradlew.bat :core_base:publishReleasePublicationToMavenLocal `"-PPOM_GROUP_ID=$groupId`" `"-PPOM_ARTIFACT_ID=$artifactId`" `"-PPOM_VERSION=$tag`" `"-PGITHUB_REPOSITORY=$githubRepository`""
 
 $statusAfter = git status --porcelain
 if (-not $statusAfter) {
