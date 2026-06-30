@@ -1,0 +1,34 @@
+<resources>
+    <string name="string_cancel">إلغاء</string>
+    <string name="string_sure">موافق</string>
+    <string name="base_cancel">إلغاء</string>
+    <string name="base_confirm">موافق</string>
+    <string name="base_loading">جارٍ التحميل...</string>
+    <string name="permission_request_title">طلب الأذونات</string>
+    <string name="permission_request_setting_title">طلب الأذونات</string>
+    <string name="permission_permanently_denied">تم رفض الأذونات التالية نهائيًا. هل تريد فتح الإعدادات لمنحها؟</string>
+    <string name="go_to_settings">فتح الإعدادات</string>
+    <string name="cancel">إلغاء</string>
+    <string name="permissions_granted_setting">يرجى فتح إعدادات النظام وتفعيل إشعارات التطبيق</string>
+    <string name="permissions_granted">تم تفعيل الأذونات في الإعدادات</string>
+    <string name="permissions_not_granted">لا تزال بعض الأذونات معطلة. يرجى مراجعة الإعدادات مرة أخرى</string>
+    <string name="partial_permission_denied">الأذونات المرفوضة جزئيًا: %1$s</string>
+    <string name="base_empty_no_data">لا توجد بيانات</string>
+    <string name="base_dialog_common_title">تنبيه</string>
+    <string name="base_dialog_common_content">المحتوى</string>
+    <string name="srl_header_failed">فشل التحديث</string>
+    <string name="srl_header_finish">اكتمل التحديث</string>
+    <string name="srl_header_loading">في انتظار التحميل...</string>
+    <string name="srl_header_pulling">اسحب للأسفل للتحديث</string>
+    <string name="srl_header_refreshing">جارٍ التحديث...</string>
+    <string name="srl_header_release">اترك للتحديث</string>
+    <string name="srl_header_secondary">اترك للانتقال إلى المستوى الثاني</string>
+    <string name="srl_header_update">آخر تحديث M-d HH:mm</string>
+    <string name="srl_footer_failed">فشل التحميل</string>
+    <string name="srl_footer_finish">اكتمل التحميل</string>
+    <string name="srl_footer_loading">جارٍ التحميل...</string>
+    <string name="srl_footer_nothing">لا توجد بيانات أخرى</string>
+    <string name="srl_footer_pulling">اسحب للأعلى لتحميل المزيد</string>
+    <string name="srl_footer_refreshing">في انتظار التحديث...</string>
+    <string name="srl_footer_release">اترك للتحميل</string>
+</resources>

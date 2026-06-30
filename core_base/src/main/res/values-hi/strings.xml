@@ -1,0 +1,34 @@
+<resources>
+    <string name="string_cancel">रद्द करें</string>
+    <string name="string_sure">ठीक है</string>
+    <string name="base_cancel">रद्द करें</string>
+    <string name="base_confirm">ठीक है</string>
+    <string name="base_loading">लोड हो रहा है...</string>
+    <string name="permission_request_title">अनुमति अनुरोध</string>
+    <string name="permission_request_setting_title">अनुमति अनुरोध</string>
+    <string name="permission_permanently_denied">निम्न अनुमतियां स्थायी रूप से अस्वीकार कर दी गई हैं। क्या उन्हें देने के लिए सेटिंग खोलें?</string>
+    <string name="go_to_settings">सेटिंग खोलें</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="permissions_granted_setting">कृपया सिस्टम सेटिंग खोलें और ऐप सूचनाएं सक्षम करें</string>
+    <string name="permissions_granted">सेटिंग में अनुमतियां सक्षम कर दी गई हैं</string>
+    <string name="permissions_not_granted">कुछ अनुमतियां अभी भी बंद हैं। कृपया सेटिंग फिर से जांचें</string>
+    <string name="partial_permission_denied">आंशिक रूप से अस्वीकृत अनुमतियां: %1$s</string>
+    <string name="base_empty_no_data">कोई डेटा नहीं</string>
+    <string name="base_dialog_common_title">सूचना</string>
+    <string name="base_dialog_common_content">सामग्री</string>
+    <string name="srl_header_failed">रीफ्रेश विफल</string>
+    <string name="srl_header_finish">रीफ्रेश पूरा हुआ</string>
+    <string name="srl_header_loading">लोड होने की प्रतीक्षा...</string>
+    <string name="srl_header_pulling">रीफ्रेश करने के लिए नीचे खींचें</string>
+    <string name="srl_header_refreshing">रीफ्रेश हो रहा है...</string>
+    <string name="srl_header_release">रीफ्रेश करने के लिए छोड़ें</string>
+    <string name="srl_header_secondary">दूसरे स्तर पर जाने के लिए छोड़ें</string>
+    <string name="srl_header_update">अंतिम अपडेट M-d HH:mm</string>
+    <string name="srl_footer_failed">लोड विफल</string>
+    <string name="srl_footer_finish">लोड पूरा हुआ</string>
+    <string name="srl_footer_loading">लोड हो रहा है...</string>
+    <string name="srl_footer_nothing">और डेटा नहीं है</string>
+    <string name="srl_footer_pulling">और लोड करने के लिए ऊपर खींचें</string>
+    <string name="srl_footer_refreshing">रीफ्रेश की प्रतीक्षा...</string>
+    <string name="srl_footer_release">लोड करने के लिए छोड़ें</string>
+</resources>

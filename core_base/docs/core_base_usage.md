@@ -25,15 +25,28 @@ implementation project(':core_base')
 
 `core_base` 内部已经依赖：
 
-- AppCompat / Material
-- Lifecycle ViewModel / Runtime
-- Activity KTX / Fragment KTX
+- AppCompat
+- Lifecycle ViewModel / LiveData
+- Activity
 - ConstraintLayout / RecyclerView / ViewPager2
 - SmartRefreshLayout
 - XPopup
-- Toasty
 
-业务模块通常只需要依赖 `core_base`。只有业务代码自己直接使用三方库类型、资源或扩展 API 时，才需要在业务模块单独声明对应依赖。
+这些依赖在 `core_base` 内部统一使用 `implementation`，不会通过 `api` 透传给使用方。业务模块如果继承 `BaseActivity`、`BaseFragment`、`BaseViewModel`、`BaseRecyclerViewAdapter`、`BaseFragmentStateAdapter` 等公开基类，需要在自己的模块里显式声明实际用到的 AndroidX 依赖。
+
+示例：
+
+```gradle
+dependencies {
+    implementation project(':core_base')
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.livedata.core)
+    implementation(libs.androidx.fragment)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.viewpager2)
+}
+```
 
 ## GitHub 网络引用
 
@@ -757,6 +770,12 @@ override fun authorized(permissionType: Int, permissionList: MutableList<String>
 - `values-it`
 - `values-pt`
 - `values-ru`
+- `values-id`
+- `values-vi`
+- `values-th`
+- `values-tr`
+- `values-ar`
+- `values-hi`
 
 新增文案必须放入 `strings.xml`，不要在代码或布局中硬编码用户可见文本。
 

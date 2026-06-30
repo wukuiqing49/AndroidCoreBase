@@ -1,0 +1,34 @@
+<resources>
+    <string name="string_cancel">İptal</string>
+    <string name="string_sure">Tamam</string>
+    <string name="base_cancel">İptal</string>
+    <string name="base_confirm">Tamam</string>
+    <string name="base_loading">Yükleniyor...</string>
+    <string name="permission_request_title">İzin isteği</string>
+    <string name="permission_request_setting_title">İzin isteği</string>
+    <string name="permission_permanently_denied">Aşağıdaki izinler kalıcı olarak reddedildi. İzin vermek için Ayarlar açılsın mı?</string>
+    <string name="go_to_settings">Ayarları aç</string>
+    <string name="cancel">İptal</string>
+    <string name="permissions_granted_setting">Lütfen sistem ayarlarını açıp uygulama bildirimlerini etkinleştirin</string>
+    <string name="permissions_granted">İzinler Ayarlar\'da etkinleştirildi</string>
+    <string name="permissions_not_granted">Bazı izinler hâlâ devre dışı. Lütfen Ayarlar\'ı tekrar kontrol edin</string>
+    <string name="partial_permission_denied">Kısmen reddedilen izinler: %1$s</string>
+    <string name="base_empty_no_data">Veri yok</string>
+    <string name="base_dialog_common_title">Bildirim</string>
+    <string name="base_dialog_common_content">İçerik</string>
+    <string name="srl_header_failed">Yenileme başarısız</string>
+    <string name="srl_header_finish">Yenileme tamamlandı</string>
+    <string name="srl_header_loading">Yükleme bekleniyor...</string>
+    <string name="srl_header_pulling">Yenilemek için aşağı çekin</string>
+    <string name="srl_header_refreshing">Yenileniyor...</string>
+    <string name="srl_header_release">Yenilemek için bırakın</string>
+    <string name="srl_header_secondary">İkinci seviyeye geçmek için bırakın</string>
+    <string name="srl_header_update">Son güncelleme M-d HH:mm</string>
+    <string name="srl_footer_failed">Yükleme başarısız</string>
+    <string name="srl_footer_finish">Yükleme tamamlandı</string>
+    <string name="srl_footer_loading">Yükleniyor...</string>
+    <string name="srl_footer_nothing">Başka veri yok</string>
+    <string name="srl_footer_pulling">Daha fazla yüklemek için yukarı çekin</string>
+    <string name="srl_footer_refreshing">Yenileme bekleniyor...</string>
+    <string name="srl_footer_release">Yüklemek için bırakın</string>
+</resources>

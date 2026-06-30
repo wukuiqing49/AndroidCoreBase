@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -13,7 +14,6 @@ import com.lxj.xpopup.XPopup
 import com.wkq.base.R
 import com.wkq.base.dialog.CommonPopupListener
 import com.wkq.base.dialog.PermissionsPopupView
-import es.dmoral.toasty.Toasty
 
 
 /**
@@ -73,9 +73,10 @@ open class PermissionsActivity : AppCompatActivity() {
                     )
             } else {
                 // 部分权限被拒绝，给个提示
-                Toasty.normal(
+                Toast.makeText(
                     this,
-                    getString(R.string.partial_permission_denied, deniedPermissions.joinToString())
+                    getString(R.string.partial_permission_denied, deniedPermissions.joinToString()),
+                    Toast.LENGTH_SHORT
                 ).show()
             }
         }
@@ -86,9 +87,9 @@ open class PermissionsActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val allPermissionsGranted = permissionList.all { isGrantedOne(it) }
             if (allPermissionsGranted) {
-                Toasty.normal(this, getString(R.string.permissions_granted)).show()
+                Toast.makeText(this, getString(R.string.permissions_granted), Toast.LENGTH_SHORT).show()
             } else {
-                Toasty.normal(this, getString(R.string.permissions_not_granted)).show()
+                Toast.makeText(this, getString(R.string.permissions_not_granted), Toast.LENGTH_SHORT).show()
             }
         }
 

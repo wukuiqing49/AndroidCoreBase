@@ -1,0 +1,34 @@
+<resources>
+    <string name="string_cancel">ยกเลิก</string>
+    <string name="string_sure">ตกลง</string>
+    <string name="base_cancel">ยกเลิก</string>
+    <string name="base_confirm">ตกลง</string>
+    <string name="base_loading">กำลังโหลด...</string>
+    <string name="permission_request_title">ขอสิทธิ์การใช้งาน</string>
+    <string name="permission_request_setting_title">ขอสิทธิ์การใช้งาน</string>
+    <string name="permission_permanently_denied">สิทธิ์ต่อไปนี้ถูกปฏิเสธถาวร ต้องการเปิดการตั้งค่าเพื่ออนุญาตหรือไม่?</string>
+    <string name="go_to_settings">เปิดการตั้งค่า</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="permissions_granted_setting">โปรดเปิดการตั้งค่าระบบและเปิดการแจ้งเตือนของแอป</string>
+    <string name="permissions_granted">เปิดสิทธิ์ในหน้าการตั้งค่าแล้ว</string>
+    <string name="permissions_not_granted">ยังมีสิทธิ์บางรายการที่ปิดอยู่ โปรดตรวจสอบการตั้งค่าอีกครั้ง</string>
+    <string name="partial_permission_denied">สิทธิ์บางส่วนถูกปฏิเสธ: %1$s</string>
+    <string name="base_empty_no_data">ไม่มีข้อมูล</string>
+    <string name="base_dialog_common_title">แจ้งเตือน</string>
+    <string name="base_dialog_common_content">เนื้อหา</string>
+    <string name="srl_header_failed">รีเฟรชไม่สำเร็จ</string>
+    <string name="srl_header_finish">รีเฟรชเสร็จสิ้น</string>
+    <string name="srl_header_loading">กำลังรอการโหลด...</string>
+    <string name="srl_header_pulling">ดึงลงเพื่อรีเฟรช</string>
+    <string name="srl_header_refreshing">กำลังรีเฟรช...</string>
+    <string name="srl_header_release">ปล่อยเพื่อรีเฟรช</string>
+    <string name="srl_header_secondary">ปล่อยเพื่อเข้าสู่ชั้นที่สอง</string>
+    <string name="srl_header_update">อัปเดตล่าสุด M-d HH:mm</string>
+    <string name="srl_footer_failed">โหลดไม่สำเร็จ</string>
+    <string name="srl_footer_finish">โหลดเสร็จสิ้น</string>
+    <string name="srl_footer_loading">กำลังโหลด...</string>
+    <string name="srl_footer_nothing">ไม่มีข้อมูลเพิ่มเติม</string>
+    <string name="srl_footer_pulling">ดึงขึ้นเพื่อโหลดเพิ่มเติม</string>
+    <string name="srl_footer_refreshing">กำลังรอการรีเฟรช...</string>
+    <string name="srl_footer_release">ปล่อยเพื่อโหลด</string>
+</resources>

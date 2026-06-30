@@ -1,6 +1,52 @@
 # core_base 网络库发布
 
-`core_base` 已按网络依赖发布方式配置。发布时会推送 `vX.Y.Z` tag 给 JitPack 构建，同时 GitHub Actions 也会把 AAR 上传到 GitHub Packages。
+`core_base` 已按网络依赖发布方式配置。推荐使用本地自动发版脚本：它会自动递增版本、构建校验、发布到 Maven Local、提交代码、打 tag 并推送，JitPack 根据 tag 构建网络依赖。
+
+## 推荐：自动发版脚本
+
+修改代码后优先执行：
+
+```powershell
+.\scripts\release-core-base.ps1 -AllowDirty
+```
+
+脚本默认读取本地和远端已有 tag，自动执行 patch +1。例如当前最高 tag 是 `v1.0.1`，会自动发布 `v1.0.2`。
+
+脚本会自动：
+
+1. 计算下一个版本号，也可通过 `-Version 1.2.3` 指定。
+2. 更新 `core_base/version.properties` 和文档中的依赖版本。
+3. 执行 `:core_base:compileDebugKotlin`。
+4. 执行 `:app:assembleDebug`。
+5. 执行 `:core_base:publishReleasePublicationToMavenLocal`。
+6. 提交发布改动。
+7. 创建 `vX.Y.Z` tag。
+8. 推送 `main` 和 tag 到 GitHub。
+
+只本地生成提交和 tag、不推送：
+
+```powershell
+.\scripts\release-core-base.ps1 -AllowDirty -SkipPush
+```
+
+指定递增方式：
+
+```powershell
+.\scripts\release-core-base.ps1 -Bump minor -AllowDirty
+.\scripts\release-core-base.ps1 -Bump major -AllowDirty
+```
+
+手动指定版本：
+
+```powershell
+.\scripts\release-core-base.ps1 -Version 1.2.3 -AllowDirty
+```
+
+脚本不会覆盖已经存在的 tag。推送完成后打开：
+
+```text
+https://jitpack.io/#wukuiqing49/AndroidCoreBase/vX.Y.Z
+```
 
 ## 当前坐标
 
@@ -10,7 +56,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.1"
+    implementation "com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.2"
 }
 ```
 
@@ -25,29 +71,31 @@ core_base/version.properties
 Windows PowerShell：
 
 ```powershell
-.\scripts\release-core-base.ps1
+.\scripts\release-core-base.ps1 -AllowDirty
 ```
 
 默认递增 `patch`，例如 `1.0.1` -> `1.0.2`。也可以指定递增方式：
 
 ```powershell
-.\scripts\release-core-base.ps1 -Bump minor
-.\scripts\release-core-base.ps1 -Bump major
+.\scripts\release-core-base.ps1 -Bump minor -AllowDirty
+.\scripts\release-core-base.ps1 -Bump major -AllowDirty
 ```
 
 脚本会自动：
 
-1. 检查 Git 工作区是否干净。
-2. 读取并递增 `core_base/version.properties`。
-3. 执行 `:core_base:publishReleasePublicationToMavenLocal` 验证发布产物。
-4. 提交版本文件。
-5. 创建并推送 `vX.Y.Z` tag。
-6. 输出 JitPack 构建地址。
+1. 读取本地和远端已有 tag，计算下一个版本。
+2. 更新 `core_base/version.properties`。
+3. 执行 `:core_base:compileDebugKotlin`。
+4. 执行 `:app:assembleDebug`。
+5. 执行 `:core_base:publishReleasePublicationToMavenLocal` 验证发布产物。
+6. 提交发布改动。
+7. 创建并推送 `vX.Y.Z` tag。
+8. 输出 JitPack 构建地址。
 
 只想本地演练、不推送：
 
 ```powershell
-.\scripts\release-core-base.ps1 -NoPush
+.\scripts\release-core-base.ps1 -AllowDirty -SkipPush
 ```
 
 ## GitHub Actions 一键发版
@@ -70,18 +118,18 @@ GitHub Packages 坐标同样使用当前 tag 作为版本：
 
 ```gradle
 dependencies {
-    implementation "com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.1"
+    implementation "com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.2"
 }
 ```
 
 ## 手动验证
 
 ```powershell
-.\gradlew.bat :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.wukuiqing49.AndroidCoreBase" "-PPOM_VERSION=v1.0.1" "-PGITHUB_REPOSITORY=wukuiqing49/AndroidCoreBase"
+.\gradlew.bat :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.wukuiqing49.AndroidCoreBase" "-PPOM_VERSION=v1.0.2" "-PGITHUB_REPOSITORY=wukuiqing49/AndroidCoreBase"
 ```
 
 验证通过后，打开：
 
 ```text
-https://jitpack.io/#wukuiqing49/AndroidCoreBase/v1.0.1
+https://jitpack.io/#wukuiqing49/AndroidCoreBase/v1.0.2
 ```

@@ -1,7 +1,7 @@
 <resources>
 
     <string name="string_cancel" >取消</string>
-    <string name="string_sure">Yes</string>
+    <string name="string_sure">确定</string>
     <string name="base_cancel">取消</string>
     <string name="base_confirm">确定</string>
     <string name="base_loading">加载中...</string>

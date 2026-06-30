@@ -2,6 +2,57 @@
 
 这份文档用于后续把 `core_base` 发布成 GitHub 网络依赖，方便其他 Android 项目直接引用。
 
+## 推荐：自动发版脚本
+
+修改代码后优先使用自动发版脚本。脚本会读取本地和远端已有 tag，默认自动执行 patch +1，并完成版本替换、构建校验、本地 Maven 发布、提交、打 tag 和推送：
+
+```powershell
+.\scripts\release-core-base.ps1 -AllowDirty
+```
+
+脚本会自动执行：
+
+- 更新 `README.md`、发布手册和网络发布说明里的 `v1.0.x` 引用。
+- 更新 `core_base/version.properties`。
+- 执行 `:core_base:compileDebugKotlin`。
+- 执行 `:app:assembleDebug`。
+- 执行 `:core_base:publishReleasePublicationToMavenLocal`。
+- `git commit -m "release core_base x.y.z"`。
+- `git tag vx.y.z`。
+- `git push origin main` 和 `git push origin vx.y.z`。
+
+如果希望功能代码和发布提交分开，先手动提交功能代码，再执行：
+
+```powershell
+.\scripts\release-core-base.ps1
+```
+
+如果要把当前未提交改动一起放进发布提交，使用：
+
+```powershell
+.\scripts\release-core-base.ps1 -AllowDirty
+```
+
+只本地生成提交和 tag、不推送：
+
+```powershell
+.\scripts\release-core-base.ps1 -AllowDirty -SkipPush
+```
+
+指定 minor、major 或固定版本：
+
+```powershell
+.\scripts\release-core-base.ps1 -Bump minor -AllowDirty
+.\scripts\release-core-base.ps1 -Bump major -AllowDirty
+.\scripts\release-core-base.ps1 -Version 1.2.3 -AllowDirty
+```
+
+脚本不会覆盖已经存在的 tag。推送完成后打开 JitPack 页面触发构建：
+
+```text
+https://jitpack.io/#wukuiqing49/AndroidCoreBase/vx.y.z
+```
+
 ## 结论
 
 - 公开给别人用，优先走 JitPack。
@@ -19,6 +70,8 @@ jitpack.yml
 .github/workflows/release-core-base.yml
 scripts/release-core-base.ps1
 core_base/docs/core_base_publish.md
+docs/core_base_network_release.md
+README.md
 ```
 
 `core_base` 已支持：
@@ -40,14 +93,14 @@ core_base/docs/core_base_publish.md
 建议再验证一次本地 Maven 发布：
 
 ```bash
-./gradlew :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.local" "-PPOM_VERSION=v1.0.0"
+./gradlew :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.local" "-PPOM_VERSION=v1.0.2"
 ```
 
 Windows PowerShell：
 
 ```powershell
 .\gradlew.bat :core_base:compileDebugKotlin
-.\gradlew.bat :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.local" "-PPOM_VERSION=v1.0.0"
+.\gradlew.bat :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.local" "-PPOM_VERSION=v1.0.2"
 ```
 
 如果这两步失败，不要打 tag 发布。
@@ -61,26 +114,26 @@ JitPack 只读取 GitHub 上的代码，本地未提交内容不会发布。
 ```bash
 git status
 git add .
-git commit -m "release core_base 1.0.0"
+git commit -m "release core_base 1.0.2"
 git push origin master
 ```
 
 ### 2. 打版本 tag
 
-示例发布 `v1.0.0`：
+示例发布 `v1.0.1`：
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.0.1
+git push origin v1.0.1
 ```
 
 如果 tag 打错了，不建议覆盖已经给别人用过的版本。还没公开使用时可以删除重打：
 
 ```bash
-git tag -d v1.0.0
-git push origin :refs/tags/v1.0.0
-git tag v1.0.0
-git push origin v1.0.0
+git tag -d v1.0.1
+git push origin :refs/tags/v1.0.1
+git tag v1.0.1
+git push origin v1.0.1
 ```
 
 ### 3. 到 JitPack 构建
@@ -94,7 +147,7 @@ https://jitpack.io/#wukuiqing49/AndroidCoreBase
 输入 tag：
 
 ```text
-v1.0.0
+v1.0.1
 ```
 
 点击 `Get it`，等待构建成功。
@@ -118,11 +171,11 @@ dependencyResolutionManagement {
 
 ```gradle
 dependencies {
-    implementation "com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.0"
+    implementation "com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.2"
 }
 ```
 
-注意：版本号要和 Git tag 完全一致，例如 tag 是 `v1.0.0`，依赖里也写 `v1.0.0`。
+注意：版本号要和 Git tag 完全一致，例如 tag 是 `v1.0.1`，依赖里也写 `v1.0.1`。
 
 ## GitHub Packages 发布
 
@@ -147,17 +200,17 @@ dependencies {
 Windows PowerShell：
 
 ```powershell
-.\scripts\release-core-base.ps1
+.\scripts\release-core-base.ps1 -AllowDirty
 ```
 
 默认递增 `patch`。也可以指定：
 
 ```powershell
-.\scripts\release-core-base.ps1 -Bump minor
-.\scripts\release-core-base.ps1 -Bump major
+.\scripts\release-core-base.ps1 -Bump minor -AllowDirty
+.\scripts\release-core-base.ps1 -Bump major -AllowDirty
 ```
 
-脚本会先验证 `:core_base:publishReleasePublicationToMavenLocal`，再提交版本文件、创建 tag 并推送。推送成功后打开脚本输出的 JitPack 地址点击 `Get it`。
+脚本会先验证 `:core_base:compileDebugKotlin`、`:app:assembleDebug` 和 `:core_base:publishReleasePublicationToMavenLocal`，再提交版本文件、创建 tag 并推送。推送成功后打开脚本输出的 JitPack 地址点击 `Get it`。
 
 ### 本地手动发布
 
@@ -174,13 +227,13 @@ GITHUB_REPOSITORY=wukuiqing49/AndroidCoreBase
 发布命令：
 
 ```bash
-./gradlew :core_base:publishReleasePublicationToGitHubPackagesRepository "-PPOM_GROUP_ID=com.github.wukuiqing49" "-PPOM_VERSION=1.0.0"
+./gradlew :core_base:publishReleasePublicationToGitHubPackagesRepository "-PPOM_GROUP_ID=com.github.wukuiqing49.AndroidCoreBase" "-PPOM_VERSION=v1.0.2"
 ```
 
 Windows PowerShell：
 
 ```powershell
-.\gradlew.bat :core_base:publishReleasePublicationToGitHubPackagesRepository "-PPOM_GROUP_ID=com.github.wukuiqing49" "-PPOM_VERSION=1.0.0"
+.\gradlew.bat :core_base:publishReleasePublicationToGitHubPackagesRepository "-PPOM_GROUP_ID=com.github.wukuiqing49.AndroidCoreBase" "-PPOM_VERSION=v1.0.2"
 ```
 
 ### 使用方引用 GitHub Packages
@@ -208,7 +261,7 @@ dependencyResolutionManagement {
 
 ```gradle
 dependencies {
-    implementation "com.github.wukuiqing49:core_base:1.0.0"
+    implementation "com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.2"
 }
 ```
 
@@ -241,7 +294,7 @@ v1.1.0-beta01
 JitPack 构建成功后，建议新建或打开一个外部测试项目验证：
 
 ```gradle
-implementation "com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.0"
+implementation "com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.2"
 ```
 
 至少验证：
@@ -277,7 +330,7 @@ consumerProguardFiles "consumer-rules.pro"
 先本地执行：
 
 ```bash
-./gradlew :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.local" "-PPOM_VERSION=v1.0.0"
+./gradlew :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.local" "-PPOM_VERSION=v1.0.2"
 ```
 
 本地都失败，先修本地构建。
@@ -289,7 +342,7 @@ consumerProguardFiles "consumer-rules.pro"
 - 使用方是否加了 `maven { url = "https://jitpack.io" }`。
 - 依赖版本是否和 Git tag 完全一致。
 - JitPack 页面对应 tag 是否构建成功。
-- 坐标是否写成 `com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.0`。
+- 坐标是否写成 `com.github.wukuiqing49.AndroidCoreBase:core_base:v1.0.2`。
 
 ### 使用方编译缺 AndroidX 类
 
@@ -301,10 +354,10 @@ consumerProguardFiles "consumer-rules.pro"
 
 ## 快速发版命令
 
-发布 `v1.0.0` 的完整命令：
+发布当前版本的完整命令：
 
 ```bash
-.\scripts\release-core-base.ps1
+.\scripts\release-core-base.ps1 -AllowDirty
 ```
 
 然后打开：

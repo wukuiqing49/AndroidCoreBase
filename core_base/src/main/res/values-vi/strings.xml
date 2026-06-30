@@ -1,0 +1,34 @@
+<resources>
+    <string name="string_cancel">Hủy</string>
+    <string name="string_sure">OK</string>
+    <string name="base_cancel">Hủy</string>
+    <string name="base_confirm">OK</string>
+    <string name="base_loading">Đang tải...</string>
+    <string name="permission_request_title">Yêu cầu quyền</string>
+    <string name="permission_request_setting_title">Yêu cầu quyền</string>
+    <string name="permission_permanently_denied">Các quyền sau đã bị từ chối vĩnh viễn. Mở Cài đặt để cấp quyền?</string>
+    <string name="go_to_settings">Mở cài đặt</string>
+    <string name="cancel">Hủy</string>
+    <string name="permissions_granted_setting">Vui lòng mở cài đặt hệ thống và bật thông báo ứng dụng</string>
+    <string name="permissions_granted">Quyền đã được bật trong Cài đặt</string>
+    <string name="permissions_not_granted">Một số quyền vẫn đang tắt. Vui lòng kiểm tra lại Cài đặt</string>
+    <string name="partial_permission_denied">Một phần quyền bị từ chối: %1$s</string>
+    <string name="base_empty_no_data">Không có dữ liệu</string>
+    <string name="base_dialog_common_title">Thông báo</string>
+    <string name="base_dialog_common_content">Nội dung</string>
+    <string name="srl_header_failed">Làm mới thất bại</string>
+    <string name="srl_header_finish">Làm mới hoàn tất</string>
+    <string name="srl_header_loading">Đang chờ tải...</string>
+    <string name="srl_header_pulling">Kéo xuống để làm mới</string>
+    <string name="srl_header_refreshing">Đang làm mới...</string>
+    <string name="srl_header_release">Thả để làm mới</string>
+    <string name="srl_header_secondary">Thả để vào tầng hai</string>
+    <string name="srl_header_update">Cập nhật lần cuối M-d HH:mm</string>
+    <string name="srl_footer_failed">Tải thất bại</string>
+    <string name="srl_footer_finish">Tải hoàn tất</string>
+    <string name="srl_footer_loading">Đang tải...</string>
+    <string name="srl_footer_nothing">Không còn dữ liệu</string>
+    <string name="srl_footer_pulling">Kéo lên để tải thêm</string>
+    <string name="srl_footer_refreshing">Đang chờ làm mới...</string>
+    <string name="srl_footer_release">Thả để tải</string>
+</resources>
