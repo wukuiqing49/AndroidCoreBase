@@ -39,6 +39,7 @@ kotlin {
 }
 
 dependencies {
+//    implementation "com.github.wukuiqing49:AndroidCoreBase:v1.0.3"
     implementation project(":core_base")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

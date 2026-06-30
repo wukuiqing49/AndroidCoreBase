@@ -78,7 +78,8 @@ jobs:
       - name: Verify core_base release build
         run: |
           ./gradlew :core_base:publishReleasePublicationToMavenLocal \
-            -PPOM_GROUP_ID=com.github.wukuiqing49.AndroidCoreBase \
+            -PPOM_GROUP_ID=com.github.wukuiqing49 \
+            -PPOM_ARTIFACT_ID=AndroidCoreBase \
             -PPOM_VERSION=${{ steps.version.outputs.tag }} \
             -PGITHUB_REPOSITORY=wukuiqing49/AndroidCoreBase
 
@@ -87,7 +88,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ./gradlew :core_base:publishReleasePublicationToGitHubPackagesRepository \
-            -PPOM_GROUP_ID=com.github.wukuiqing49.AndroidCoreBase \
+            -PPOM_GROUP_ID=com.github.wukuiqing49 \
+            -PPOM_ARTIFACT_ID=AndroidCoreBase \
             -PPOM_VERSION=${{ steps.version.outputs.tag }} \
             -PGITHUB_REPOSITORY=wukuiqing49/AndroidCoreBase
 
