@@ -2,7 +2,6 @@ package com.wkq.base.activity
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -55,7 +54,6 @@ open class PermissionsActivity : AppCompatActivity() {
                     .moveUpToKeyboard(false).hasShadowBg(true)  //
                     .isViewMode(true).enableDrag(false)
 
-                    .navigationBarColor(Color.TRANSPARENT)
                     // 和baseActivity设置的导航颜色统一
                     .isLightStatusBar(true) // 默认修改状态栏为亮色，dialog有效
                     .isDestroyOnDismiss(true) //对于只使用一次的弹窗，推荐设置这个
@@ -182,7 +180,6 @@ open class PermissionsActivity : AppCompatActivity() {
             .moveUpToKeyboard(false).hasShadowBg(true)  //
             .isViewMode(true).enableDrag(false)
 
-            .navigationBarColor(Color.TRANSPARENT)
             // 和baseActivity设置的导航颜色统一
             .isLightStatusBar(true) // 默认修改状态栏为亮色，dialog有效
             .isDestroyOnDismiss(true) //对于只使用一次的弹窗，推荐设置这个

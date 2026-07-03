@@ -1,7 +1,8 @@
 package com.wkq.base.widget
 
 import android.content.Context
-import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -11,13 +12,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
-
 import com.wkq.base.R
 
-/**
- * 自定义空布局组件
- * 支持文字和图片居中展示，支持设置图片、文字、文字大小、颜色以及点击事件
- */
 class EmptyView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -26,69 +22,124 @@ class EmptyView @JvmOverloads constructor(
 
     private val ivEmpty: ImageView
     private val tvEmpty: TextView
+    private val defaultImageTargetSizePx: Int
 
     init {
-        // 加载布局
         LayoutInflater.from(context).inflate(R.layout.view_empty, this, true)
         ivEmpty = findViewById(R.id.iv_empty)
         tvEmpty = findViewById(R.id.tv_empty)
+        defaultImageTargetSizePx = dpToPx(DEFAULT_EMPTY_IMAGE_TARGET_DP)
 
-        // 读取自定义属性
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.EmptyView)
-        
-        val imageRes = typedArray.getResourceId(R.styleable.EmptyView_emptyImage, -1)
-        if (imageRes != -1) {
-            ivEmpty.setImageResource(imageRes)
+        try {
+            val imageRes = typedArray.getResourceId(R.styleable.EmptyView_emptyImage, -1)
+            if (imageRes != -1) {
+                setEmptyImage(imageRes)
+            }
+
+            val text = typedArray.getString(R.styleable.EmptyView_emptyText)
+            if (!text.isNullOrEmpty()) {
+                tvEmpty.text = text
+            }
+
+            val textColor = typedArray.getColor(
+                R.styleable.EmptyView_emptyTextColor,
+                Color.parseColor("#999999")
+            )
+            tvEmpty.setTextColor(textColor)
+
+            val textSize = typedArray.getDimension(R.styleable.EmptyView_emptyTextSize, -1f)
+            if (textSize != -1f) {
+                tvEmpty.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+            }
+        } finally {
+            typedArray.recycle()
         }
-
-        val text = typedArray.getString(R.styleable.EmptyView_emptyText)
-        if (!text.isNullOrEmpty()) {
-            tvEmpty.text = text
-        }
-
-        val textColor = typedArray.getColor(R.styleable.EmptyView_emptyTextColor, Color.parseColor("#999999"))
-        tvEmpty.setTextColor(textColor)
-
-        val textSize = typedArray.getDimension(R.styleable.EmptyView_emptyTextSize, -1f)
-        if (textSize != -1f) {
-            tvEmpty.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-        }
-
-        typedArray.recycle()
     }
 
-    /**
-     * 设置空布局图片
-     */
     fun setEmptyImage(@DrawableRes resId: Int) {
-        ivEmpty.setImageResource(resId)
+        val bitmap = decodeSampledBitmapResource(
+            resId = resId,
+            reqWidth = resolveTargetSize(ivEmpty.layoutParams?.width),
+            reqHeight = resolveTargetSize(ivEmpty.layoutParams?.height)
+        )
+        if (bitmap != null) {
+            ivEmpty.setImageBitmap(bitmap)
+        } else {
+            ivEmpty.setImageResource(resId)
+        }
     }
 
-    /**
-     * 设置空布局文字
-     */
     fun setEmptyText(text: CharSequence?) {
         tvEmpty.text = text
     }
 
-    /**
-     * 设置文字颜色
-     */
     fun setEmptyTextColor(@ColorInt color: Int) {
         tvEmpty.setTextColor(color)
     }
 
-    /**
-     * 设置文字大小（单位：sp）
-     */
     fun setEmptyTextSize(sizeSp: Float) {
         tvEmpty.setTextSize(TypedValue.COMPLEX_UNIT_SP, sizeSp)
     }
 
-    /**
-     * 设置点击事件
-     */
     fun setOnEmptyClickListener(listener: OnClickListener?) {
         this.setOnClickListener(listener)
+    }
+
+    private fun decodeSampledBitmapResource(
+        @DrawableRes resId: Int,
+        reqWidth: Int,
+        reqHeight: Int
+    ): Bitmap? = runCatching {
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+        BitmapFactory.decodeResource(resources, resId, options)
+        if (options.outWidth <= 0 || options.outHeight <= 0) {
+            return@runCatching null
+        }
+
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
+        options.inJustDecodeBounds = false
+        BitmapFactory.decodeResource(resources, resId, options)
+    }.getOrNull()
+
+    private fun calculateInSampleSize(
+        options: BitmapFactory.Options,
+        reqWidth: Int,
+        reqHeight: Int
+    ): Int {
+        val height = options.outHeight
+        val width = options.outWidth
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight = height / 2
+            val halfWidth = width / 2
+
+            while (halfHeight / inSampleSize >= reqHeight &&
+                halfWidth / inSampleSize >= reqWidth
+            ) {
+                inSampleSize *= 2
+            }
+        }
+
+        return inSampleSize
+    }
+
+    private fun resolveTargetSize(layoutSize: Int?): Int {
+        return if (layoutSize != null && layoutSize > 0) {
+            layoutSize
+        } else {
+            defaultImageTargetSizePx
+        }
+    }
+
+    private fun dpToPx(value: Int): Int {
+        return (value * resources.displayMetrics.density + 0.5f).toInt()
+    }
+
+    private companion object {
+        private const val DEFAULT_EMPTY_IMAGE_TARGET_DP = 160
     }
 }
