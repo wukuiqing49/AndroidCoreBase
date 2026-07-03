@@ -1,6 +1,7 @@
 package com.wkq.base.activity
 
 import android.view.View
+import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wkq.base.adapter.BaseRecyclerViewAdapter
@@ -20,21 +21,93 @@ abstract class BaseListActivity<T> : BaseActivity<ViewBaseListBinding>() {
     }
 
     override fun applyDefaultSystemBarsInsets() {
-        SystemBarInsets.applyScrollableBottomInset(binding.smartRefreshLayout)
-        SystemBarInsets.applyBottomInset(binding.flFooterContainer)
-    }
-
-    protected fun setHeaderView(view: View) {
-        binding.flHeaderContainer.removeAllViews()
-        binding.flHeaderContainer.addView(view)
-        if (view is CommonTitleBar) {
-            view.applyStatusBarInset()
+        SystemBarInsets.applySystemBarsInset(
+            view = binding.flHeaderContainer,
+            includeTop = shouldApplyStatusBarInset(),
+            includeBottom = false,
+            includeHorizontal = false,
+            includeIme = false,
+            includeGestureInset = false
+        )
+        SystemBarInsets.applySystemBarsInset(
+            view = binding.flFooterContainer,
+            includeTop = false,
+            includeBottom = shouldApplyNavigationBarInset(),
+            includeHorizontal = false,
+            includeIme = shouldApplyImeInset(),
+            includeGestureInset = shouldApplyGestureInset()
+        )
+        if (shouldApplyHorizontalInset()) {
+            SystemBarInsets.applySystemBarsInset(
+                view = binding.root,
+                includeTop = false,
+                includeBottom = false,
+                includeHorizontal = true,
+                includeIme = false,
+                includeGestureInset = shouldApplyGestureInset()
+            )
         }
     }
 
+    protected fun setHeaderView(view: View) {
+        if (view is CommonTitleBar) {
+            // BaseListActivity's wrapper owns the top inset, including fitStatusBar title bars.
+            SystemBarInsets.clearInsets(view)
+        }
+        replaceContainerView(binding.flHeaderContainer, view)
+        applyHeaderContainerInsets()
+    }
+
     protected fun setFooterView(view: View) {
-        binding.flFooterContainer.removeAllViews()
-        binding.flFooterContainer.addView(view)
+        replaceContainerView(binding.flFooterContainer, view)
+        applyFooterContainerInsets()
+    }
+
+    /**
+     * Adds a header that owns its WindowInsets listener.
+     */
+    protected fun setHeaderViewWithOwnInsets(view: View) {
+        SystemBarInsets.clearInsets(binding.flHeaderContainer)
+        replaceContainerView(binding.flHeaderContainer, view)
+    }
+
+    /**
+     * Adds a footer that owns its WindowInsets listener.
+     */
+    protected fun setFooterViewWithOwnInsets(view: View) {
+        SystemBarInsets.clearInsets(binding.flFooterContainer)
+        replaceContainerView(binding.flFooterContainer, view)
+    }
+
+    private fun applyHeaderContainerInsets() {
+        SystemBarInsets.applySystemBarsInset(
+            view = binding.flHeaderContainer,
+            includeTop = shouldApplyStatusBarInset(),
+            includeBottom = false,
+            includeHorizontal = false,
+            includeIme = false,
+            includeGestureInset = false
+        )
+    }
+
+    private fun applyFooterContainerInsets() {
+        SystemBarInsets.applySystemBarsInset(
+            view = binding.flFooterContainer,
+            includeTop = false,
+            includeBottom = shouldApplyNavigationBarInset(),
+            includeHorizontal = false,
+            includeIme = shouldApplyImeInset(),
+            includeGestureInset = shouldApplyGestureInset()
+        )
+    }
+
+    private fun replaceContainerView(container: FrameLayout, view: View) {
+        container.removeAllViews()
+        container.addView(view)
+        container.background = view.background?.constantState
+            ?.newDrawable(resources)
+            ?.mutate()
+            ?: view.background
     }
 
     // 默认起始页码

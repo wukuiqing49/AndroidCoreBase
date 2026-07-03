@@ -4,8 +4,89 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import java.util.WeakHashMap
 
 object SystemBarInsets {
+
+    private val initialStates = WeakHashMap<View, InitialViewState>()
+    private val pendingAttachListeners =
+        WeakHashMap<View, View.OnAttachStateChangeListener>()
+
+    /**
+     * Removes the listener installed by this helper. When requested, the View is restored to the
+     * padding, height and bottom margin captured by its first Insets registration.
+     */
+    fun clearInsets(
+        view: View,
+        restoreInitialState: Boolean = true
+    ) {
+        val initialState = initialStates.remove(view) ?: return
+        ViewCompat.setOnApplyWindowInsetsListener(view, null)
+        pendingAttachListeners.remove(view)?.let(view::removeOnAttachStateChangeListener)
+        if (!restoreInitialState) return
+
+        view.applyPadding(initialState.padding)
+        initialState.height?.let { view.updateHeight(it) }
+        val params = view.layoutParams as? ViewGroup.MarginLayoutParams
+        if (params != null && initialState.bottomMargin != null) {
+            params.bottomMargin = initialState.bottomMargin
+            view.layoutParams = params
+        }
+    }
+
+    /**
+     * Updates the business padding baseline without including any WindowInsets.
+     * Use this instead of setPadding after an Insets helper has already been installed.
+     */
+    fun updateInitialPadding(
+        view: View,
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int
+    ) {
+        val current = view.initialState()
+        initialStates[view] = current.copy(
+            padding = PaddingSnapshot(
+                left = left,
+                top = top,
+                right = right,
+                bottom = bottom,
+                start = if (view.layoutDirection == View.LAYOUT_DIRECTION_RTL) right else left,
+                end = if (view.layoutDirection == View.LAYOUT_DIRECTION_RTL) left else right,
+                isRelative = false
+            )
+        )
+        view.setPadding(left, top, right, bottom)
+        view.requestApplyInsetsWhenAttached()
+    }
+
+    /**
+     * Relative-padding counterpart of [updateInitialPadding].
+     */
+    fun updateInitialPaddingRelative(
+        view: View,
+        start: Int,
+        top: Int,
+        end: Int,
+        bottom: Int
+    ) {
+        val isRtl = view.layoutDirection == View.LAYOUT_DIRECTION_RTL
+        val current = view.initialState()
+        initialStates[view] = current.copy(
+            padding = PaddingSnapshot(
+                left = if (isRtl) end else start,
+                top = top,
+                right = if (isRtl) start else end,
+                bottom = bottom,
+                start = start,
+                end = end,
+                isRelative = true
+            )
+        )
+        view.setPaddingRelative(start, top, end, bottom)
+        view.requestApplyInsetsWhenAttached()
+    }
 
     fun applySystemBarsInset(
         view: View,
@@ -15,7 +96,7 @@ object SystemBarInsets {
         includeIme: Boolean = false,
         includeGestureInset: Boolean = true
     ) {
-        val initial = view.snapshot()
+        val initial = view.initialState().padding
         ViewCompat.setOnApplyWindowInsetsListener(view) { target, insets ->
             val topInset = if (includeTop) {
                 insets.getInsets(
@@ -24,21 +105,22 @@ object SystemBarInsets {
             } else {
                 0
             }
-            val bottomInset = if (includeBottom) {
-                insets.resolveBottomInset(includeIme, includeGestureInset)
-            } else {
-                0
-            }
+            val bottomInset = insets.resolveBottomInset(
+                includeNavigationBar = includeBottom,
+                includeIme = includeIme,
+                includeGestureInset = includeBottom && includeGestureInset
+            )
             val horizontalInset = if (includeHorizontal) {
-                insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+                insets.resolveHorizontalInset(includeGestureInset)
             } else {
                 null
             }
-            target.setPadding(
-                initial.left + (horizontalInset?.left ?: 0),
-                initial.top + topInset,
-                initial.right + (horizontalInset?.right ?: 0),
-                initial.bottom + bottomInset
+            target.applyPadding(
+                initial = initial,
+                addedLeft = horizontalInset?.left ?: 0,
+                addedTop = topInset,
+                addedRight = horizontalInset?.right ?: 0,
+                addedBottom = bottomInset
             )
             insets
         }
@@ -49,20 +131,19 @@ object SystemBarInsets {
         view: View,
         resizeHeight: Boolean = true
     ) {
-        val initial = view.snapshot()
-        val initialHeight = view.layoutParams.height
+        val initialState = view.initialState()
+        val initial = initialState.padding
+        val initialHeight = initialState.height
         ViewCompat.setOnApplyWindowInsetsListener(view) { target, insets ->
             val topInset = insets.getInsets(
                 WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.displayCutout()
             ).top
-            if (resizeHeight && initialHeight > 0) {
+            if (resizeHeight && initialHeight != null && initialHeight > 0) {
                 target.updateHeight(initialHeight + topInset)
             }
-            target.setPadding(
-                initial.left,
-                initial.top + topInset,
-                initial.right,
-                initial.bottom
+            target.applyPadding(
+                initial = initial,
+                addedTop = topInset
             )
             insets
         }
@@ -76,18 +157,21 @@ object SystemBarInsets {
         extraBottom: Int = 0,
         includeGestureInset: Boolean = true
     ) {
-        val initial = view.snapshot()
-        val initialHeight = view.layoutParams.height
+        val initialState = view.initialState()
+        val initial = initialState.padding
+        val initialHeight = initialState.height
         ViewCompat.setOnApplyWindowInsetsListener(view) { target, insets ->
-            val bottomInset = insets.resolveBottomInset(includeIme, includeGestureInset)
-            if (resizeHeight && initialHeight > 0) {
+            val bottomInset = insets.resolveBottomInset(
+                includeNavigationBar = true,
+                includeIme = includeIme,
+                includeGestureInset = includeGestureInset
+            )
+            if (resizeHeight && initialHeight != null && initialHeight > 0) {
                 target.updateHeight(initialHeight + bottomInset)
             }
-            target.setPadding(
-                initial.left,
-                initial.top,
-                initial.right,
-                initial.bottom + bottomInset + extraBottom
+            target.applyPadding(
+                initial = initial,
+                addedBottom = bottomInset + extraBottom
             )
             insets
         }
@@ -117,13 +201,19 @@ object SystemBarInsets {
         includeGestureInset: Boolean = true
     ) {
         val params = view.layoutParams as? ViewGroup.MarginLayoutParams ?: return
-        val initialBottomMargin = params.bottomMargin
+        val initialBottomMargin = view.initialState().bottomMargin ?: params.bottomMargin
         ViewCompat.setOnApplyWindowInsetsListener(view) { target, insets ->
             val targetParams = target.layoutParams as? ViewGroup.MarginLayoutParams
             if (targetParams != null) {
-                targetParams.bottomMargin =
-                    initialBottomMargin + insets.resolveBottomInset(includeIme, includeGestureInset) + extraBottom
-                target.layoutParams = targetParams
+                val bottomMargin = initialBottomMargin + insets.resolveBottomInset(
+                    includeNavigationBar = true,
+                    includeIme = includeIme,
+                    includeGestureInset = includeGestureInset
+                ) + extraBottom
+                if (targetParams.bottomMargin != bottomMargin) {
+                    targetParams.bottomMargin = bottomMargin
+                    target.layoutParams = targetParams
+                }
             }
             insets
         }
@@ -142,14 +232,23 @@ object SystemBarInsets {
         extraLeft: Int = 0,
         extraRight: Int = 0
     ) {
-        val initial = view.snapshot()
+        val initial = view.initialState().padding
         ViewCompat.setOnApplyWindowInsetsListener(view) { target, insets ->
-            val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
-            target.setPadding(
-                initial.left + if (applyLeft) gestures.left + extraLeft else 0,
-                initial.top,
-                initial.right + if (applyRight) gestures.right + extraRight else 0,
-                initial.bottom
+            val systemGestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+            val mandatoryGestures =
+                insets.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures())
+            target.applyPadding(
+                initial = initial,
+                addedLeft = if (applyLeft) {
+                    maxOf(systemGestures.left, mandatoryGestures.left) + extraLeft
+                } else {
+                    0
+                },
+                addedRight = if (applyRight) {
+                    maxOf(systemGestures.right, mandatoryGestures.right) + extraRight
+                } else {
+                    0
+                }
             )
             insets
         }
@@ -157,10 +256,18 @@ object SystemBarInsets {
     }
 
     private fun WindowInsetsCompat.resolveBottomInset(
+        includeNavigationBar: Boolean,
         includeIme: Boolean,
         includeGestureInset: Boolean
     ): Int {
-        val navigationBottom = getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+        val navigationBottom = if (includeNavigationBar) {
+            getInsets(
+                WindowInsetsCompat.Type.navigationBars() or
+                    WindowInsetsCompat.Type.displayCutout()
+            ).bottom
+        } else {
+            0
+        }
         val gestureBottom = if (includeGestureInset) {
             maxOf(
                 getInsets(WindowInsetsCompat.Type.systemGestures()).bottom,
@@ -177,8 +284,78 @@ object SystemBarInsets {
         return maxOf(navigationBottom, gestureBottom, imeBottom)
     }
 
-    private fun View.snapshot(): PaddingSnapshot {
-        return PaddingSnapshot(paddingLeft, paddingTop, paddingRight, paddingBottom)
+    private fun WindowInsetsCompat.resolveHorizontalInset(
+        includeGestureInset: Boolean
+    ): HorizontalInset {
+        val systemBars = getInsets(
+            WindowInsetsCompat.Type.navigationBars() or WindowInsetsCompat.Type.displayCutout()
+        )
+        if (!includeGestureInset) {
+            return HorizontalInset(systemBars.left, systemBars.right)
+        }
+        val systemGestures = getInsets(WindowInsetsCompat.Type.systemGestures())
+        val mandatoryGestures = getInsets(WindowInsetsCompat.Type.mandatorySystemGestures())
+        return HorizontalInset(
+            left = maxOf(systemBars.left, systemGestures.left, mandatoryGestures.left),
+            right = maxOf(systemBars.right, systemGestures.right, mandatoryGestures.right)
+        )
+    }
+
+    private fun View.initialState(): InitialViewState {
+        return initialStates.getOrPut(this) {
+            captureInitialState()
+        }
+    }
+
+    private fun View.captureInitialState(): InitialViewState {
+        val params = layoutParams
+        return InitialViewState(
+            padding = PaddingSnapshot(
+                left = paddingLeft,
+                top = paddingTop,
+                right = paddingRight,
+                bottom = paddingBottom,
+                start = paddingStart,
+                end = paddingEnd,
+                isRelative = isPaddingRelative
+            ),
+            height = params?.height,
+            bottomMargin = (params as? ViewGroup.MarginLayoutParams)?.bottomMargin
+        )
+    }
+
+    private fun View.applyPadding(
+        initial: PaddingSnapshot,
+        addedLeft: Int = 0,
+        addedTop: Int = 0,
+        addedRight: Int = 0,
+        addedBottom: Int = 0
+    ) {
+        if (initial.isRelative) {
+            val addedStart = if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+                addedRight
+            } else {
+                addedLeft
+            }
+            val addedEnd = if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+                addedLeft
+            } else {
+                addedRight
+            }
+            setPaddingRelative(
+                initial.start + addedStart,
+                initial.top + addedTop,
+                initial.end + addedEnd,
+                initial.bottom + addedBottom
+            )
+        } else {
+            setPadding(
+                initial.left + addedLeft,
+                initial.top + addedTop,
+                initial.right + addedRight,
+                initial.bottom + addedBottom
+            )
+        }
     }
 
     private fun View.requestApplyInsetsWhenAttached() {
@@ -186,14 +363,19 @@ object SystemBarInsets {
             ViewCompat.requestApplyInsets(this)
             return
         }
-        addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+        if (pendingAttachListeners.containsKey(this)) return
+
+        val listener = object : View.OnAttachStateChangeListener {
             override fun onViewAttachedToWindow(v: View) {
+                pendingAttachListeners.remove(v)
                 v.removeOnAttachStateChangeListener(this)
                 ViewCompat.requestApplyInsets(v)
             }
 
             override fun onViewDetachedFromWindow(v: View) = Unit
-        })
+        }
+        pendingAttachListeners[this] = listener
+        addOnAttachStateChangeListener(listener)
     }
 
     private fun View.updateHeight(height: Int) {
@@ -207,6 +389,20 @@ object SystemBarInsets {
         val left: Int,
         val top: Int,
         val right: Int,
-        val bottom: Int
+        val bottom: Int,
+        val start: Int,
+        val end: Int,
+        val isRelative: Boolean
+    )
+
+    private data class InitialViewState(
+        val padding: PaddingSnapshot,
+        val height: Int?,
+        val bottomMargin: Int?
+    )
+
+    private data class HorizontalInset(
+        val left: Int,
+        val right: Int
     )
 }

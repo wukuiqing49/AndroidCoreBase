@@ -9,6 +9,7 @@ import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.viewbinding.ViewBinding
 import com.wkq.base.databinding.ViewTitleContentContainerBinding
+import com.wkq.base.insets.SystemBarInsets
 import com.wkq.base.reflect.resolveGenericClass
 
 abstract class BaseTitleActivity<ContentVB : ViewBinding> :
@@ -98,11 +99,21 @@ abstract class BaseTitleActivity<ContentVB : ViewBinding> :
 
     override fun applyDefaultSystemBarsInsets() {
         // 标题页由 CommonTitleBar 处理顶部 Insets，内容区默认约束在标题栏下方。
+        SystemBarInsets.applySystemBarsInset(
+            view = binding.root,
+            includeTop = false,
+            includeBottom = shouldApplyNavigationBarInset(),
+            includeHorizontal = shouldApplyHorizontalInset(),
+            includeIme = shouldApplyImeInset(),
+            includeGestureInset = shouldApplyGestureInset()
+        )
     }
 
     override fun initImmersionBar() {
         super.initImmersionBar()
-        binding.titleBar.applyStatusBarInset()
+        if (shouldApplyStatusBarInset()) {
+            binding.titleBar.applyStatusBarInset()
+        }
         setTitleContentLayoutMode(TitleContentLayoutMode.VERTICAL)
     }
 
