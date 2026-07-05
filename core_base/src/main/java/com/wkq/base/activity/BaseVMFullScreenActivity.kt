@@ -19,7 +19,12 @@ abstract class BaseVMFullScreenActivity<VB : ViewBinding, VM : ViewModel> :
 
     @Suppress("UNCHECKED_CAST")
     override fun initViewModel() {
-        val clazz = resolveGenericClass<VM>(this, 1)
+        val clazz = resolveGenericClass<VM>(
+            instance = this,
+            genericBaseClass = BaseVMFullScreenActivity::class.java,
+            index = 1,
+            expectedSupertype = ViewModel::class.java
+        )
         viewModel = ViewModelProvider(this)[clazz]
         bindBaseUiStateIfNeeded()
     }

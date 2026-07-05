@@ -35,7 +35,12 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
 
     @Suppress("UNCHECKED_CAST")
     protected open fun initViewBinding(inflater: LayoutInflater, container: ViewGroup?) {
-        val clazz = resolveGenericClass<VB>(this, 0)
+        val clazz = resolveGenericClass<VB>(
+            instance = this,
+            genericBaseClass = BaseFragment::class.java,
+            index = 0,
+            expectedSupertype = ViewBinding::class.java
+        )
         val method = clazz.getMethod("inflate", LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.java)
         _binding = method.invoke(null, inflater, container, false) as VB
     }

@@ -18,7 +18,12 @@ abstract class BaseVMFragment<VB : ViewBinding, VM : ViewModel> : BaseFragment<V
 
     @Suppress("UNCHECKED_CAST")
     override fun initViewModel() {
-        val clazz = resolveGenericClass<VM>(this, 1)
+        val clazz = resolveGenericClass<VM>(
+            instance = this,
+            genericBaseClass = BaseVMFragment::class.java,
+            index = 1,
+            expectedSupertype = ViewModel::class.java
+        )
         viewModel = ViewModelProvider(this)[clazz]
         bindBaseUiStateIfNeeded()
     }

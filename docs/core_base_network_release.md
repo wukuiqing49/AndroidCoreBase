@@ -56,7 +56,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.wukuiqing49:AndroidCoreBase:v1.0.5"
+    implementation "com.github.wukuiqing49:AndroidCoreBase:v1.0.6"
 }
 ```
 
@@ -118,18 +118,18 @@ GitHub Packages 坐标同样使用当前 tag 作为版本：
 
 ```gradle
 dependencies {
-    implementation "com.github.wukuiqing49:AndroidCoreBase:v1.0.5"
+    implementation "com.github.wukuiqing49:AndroidCoreBase:v1.0.6"
 }
 ```
 
 ## 手动验证
 
 ```powershell
-.\gradlew.bat :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.wukuiqing49" "-PPOM_ARTIFACT_ID=AndroidCoreBase" "-PPOM_VERSION=v1.0.5" "-PGITHUB_REPOSITORY=wukuiqing49/AndroidCoreBase"
+.\gradlew.bat :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.wukuiqing49" "-PPOM_ARTIFACT_ID=AndroidCoreBase" "-PPOM_VERSION=v1.0.6" "-PGITHUB_REPOSITORY=wukuiqing49/AndroidCoreBase"
 ```
 
 验证通过后，打开：
 
 ```text
-https://jitpack.io/#wukuiqing49/AndroidCoreBase/v1.0.5
+https://jitpack.io/#wukuiqing49/AndroidCoreBase/v1.0.6
 ```

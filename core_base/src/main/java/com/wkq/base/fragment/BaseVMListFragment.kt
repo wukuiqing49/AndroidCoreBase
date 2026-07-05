@@ -17,7 +17,12 @@ abstract class BaseVMListFragment<VM : ViewModel, T> : BaseListFragment<T>() {
 
     @Suppress("UNCHECKED_CAST")
     override fun initViewModel() {
-        val clazz = resolveGenericClass<VM>(this, 0)
+        val clazz = resolveGenericClass<VM>(
+            instance = this,
+            genericBaseClass = BaseVMListFragment::class.java,
+            index = 0,
+            expectedSupertype = ViewModel::class.java
+        )
         viewModel = ViewModelProvider(this)[clazz]
         bindBaseUiStateIfNeeded()
     }

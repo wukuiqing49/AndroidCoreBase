@@ -94,7 +94,12 @@ abstract class BaseActivity<VB : ViewBinding> : PermissionsActivity() {
 
     @Suppress("UNCHECKED_CAST")
     protected open fun initViewBinding() {
-        val clazz = resolveGenericClass<VB>(this, 0)
+        val clazz = resolveGenericClass<VB>(
+            instance = this,
+            genericBaseClass = BaseActivity::class.java,
+            index = 0,
+            expectedSupertype = ViewBinding::class.java
+        )
         val method = clazz.getMethod("inflate", LayoutInflater::class.java)
         binding = method.invoke(null, layoutInflater) as VB
     }

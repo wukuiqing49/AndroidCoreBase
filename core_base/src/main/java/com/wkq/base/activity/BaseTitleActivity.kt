@@ -26,7 +26,12 @@ abstract class BaseTitleActivity<ContentVB : ViewBinding> :
     override fun initViewBinding() {
         binding = ViewTitleContentContainerBinding.inflate(layoutInflater)
 
-        val clazz = resolveGenericClass<ContentVB>(this, 0)
+        val clazz = resolveGenericClass<ContentVB>(
+            instance = this,
+            genericBaseClass = BaseTitleActivity::class.java,
+            index = 0,
+            expectedSupertype = ViewBinding::class.java
+        )
         val method = clazz.getMethod("inflate", LayoutInflater::class.java)
         contentBinding = method.invoke(null, layoutInflater) as ContentVB
 
