@@ -1,13 +1,27 @@
 # core_base shared keep rules
-# Keep generic metadata so reflection on generic superclass continues to work in release builds.
+# Generic metadata is read by GenericTypeResolver at runtime.
 -keepattributes Signature, InnerClasses, EnclosingMethod
 -keepattributes *Annotation*
 
-# Preserve generated ViewBinding classes and their members because BaseActivity/BaseFragment
-# resolve the binding type by reflection.
--keep class * implements androidx.viewbinding.ViewBinding { *; }
+# In R8 full mode, Signature is retained only on explicitly matched classes. These soft keep rules
+# preserve generic metadata throughout the base Activity/Fragment hierarchy without making pages
+# roots or preventing optimization, shrinking, or obfuscation.
+-keep,allowoptimization,allowshrinking,allowobfuscation class com.wkq.base.activity.BaseActivity
+-keep,allowoptimization,allowshrinking,allowobfuscation class * extends com.wkq.base.activity.BaseActivity
+-keep,allowoptimization,allowshrinking,allowobfuscation class com.wkq.base.fragment.BaseFragment
+-keep,allowoptimization,allowshrinking,allowobfuscation class * extends com.wkq.base.fragment.BaseFragment
 
-# Preserve the shared base ViewModel and all Activity/Fragment subclasses used by the app.
--keep class com.wkq.base.BaseViewModel { *; }
--keep public class * extends android.app.Activity { *; }
--keep public class * extends androidx.fragment.app.Fragment { *; }
+# BaseActivity/BaseTitleActivity/BaseFragment resolve generated bindings from generic signatures and
+# invoke inflate(...) by name. Binding classes must stay live and those overload names must not be
+# changed, but unrelated generated members may still be optimized.
+-keep,allowoptimization,allowobfuscation class * implements androidx.viewbinding.ViewBinding
+-keepclassmembers,allowoptimization class * implements androidx.viewbinding.ViewBinding {
+    public static *** inflate(android.view.LayoutInflater);
+    public static *** inflate(android.view.LayoutInflater, android.view.ViewGroup, boolean);
+}
+
+# BaseVM Activity/Fragment variants resolve ViewModel classes from generic signatures.
+# ViewModelProvider constructs them indirectly, so keep the class and every supported constructor.
+-keep,allowoptimization,allowobfuscation class * extends androidx.lifecycle.ViewModel {
+    <init>(...);
+}

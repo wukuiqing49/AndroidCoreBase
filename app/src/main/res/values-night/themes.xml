@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.CoreBaseDemo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="colorPrimary">@color/demo_accent</item>
+        <item name="colorPrimaryVariant">@color/demo_accent</item>
+        <item name="colorAccent">@color/demo_accent</item>
+    </style>
+</resources>
