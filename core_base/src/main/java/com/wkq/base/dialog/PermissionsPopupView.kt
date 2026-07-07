@@ -6,6 +6,7 @@ import android.os.Build
 import android.text.TextUtils
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import com.lxj.xpopup.core.CenterPopupView
@@ -22,7 +23,7 @@ internal class PermissionsPopupView(
     private val binding = DialogCommonPopBinding.inflate(LayoutInflater.from(context))
 
     override fun addInnerContent() {
-        val popupWidth = (getScreenWidth() * 650f / 960f).toInt()
+        val popupWidth = (getScreenWidth() * 0.85f).toInt()
         val params = FrameLayout.LayoutParams(popupWidth, FrameLayout.LayoutParams.WRAP_CONTENT)
         params.gravity = Gravity.CENTER
         centerPopupContainer.addView(binding.root, params)
@@ -45,8 +46,13 @@ internal class PermissionsPopupView(
         initView()
     }
 
-    private fun initView() {
-        binding.tvTitle.text = title
+    internal fun initView() {
+        if (TextUtils.isEmpty(title)) {
+            binding.tvTitle.visibility = View.GONE
+        } else {
+            binding.tvTitle.text = title
+            binding.tvTitle.visibility = View.VISIBLE
+        }
         binding.tvContent.text = desc
 
         if (!TextUtils.isEmpty(sureText)) {

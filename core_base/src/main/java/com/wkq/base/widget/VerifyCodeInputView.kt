@@ -264,12 +264,8 @@ class VerifyCodeInputView @JvmOverloads constructor(
         dispatchCodeState()
     }
 
-    private fun normalizeInput(text: String): String {
-        return if (numericOnly) {
-            text.filter { it.isDigit() }
-        } else {
-            text.filter { !it.isWhitespace() }
-        }
+    internal fun normalizeInput(text: String): String {
+        return Companion.normalizeInput(text, numericOnly)
     }
 
     private fun render() {
@@ -530,5 +526,15 @@ class VerifyCodeInputView @JvmOverloads constructor(
             sp,
             resources.displayMetrics
         ).toInt()
+    }
+
+    internal companion object {
+        internal fun normalizeInput(text: String, numericOnly: Boolean): String {
+            return if (numericOnly) {
+                text.filter { it.isDigit() }
+            } else {
+                text.filter { !it.isWhitespace() }
+            }
+        }
     }
 }

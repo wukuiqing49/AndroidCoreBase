@@ -104,44 +104,46 @@ class MultiSpanTextView @JvmOverloads constructor(
         setText(text)
     }
 
-    private data class SpanRange(
-        val start: Int,
-        val end: Int,
-        val item: SpanItem
-    )
+    internal companion object {
+        internal data class SpanRange(
+            val start: Int,
+            val end: Int,
+            val item: SpanItem
+        )
 
-    private fun buildSpanRanges(text: CharSequence, items: List<SpanItem>): List<SpanRange> {
-        val candidates = mutableListOf<SpanRange>()
+        internal fun buildSpanRanges(text: CharSequence, items: List<SpanItem>): List<SpanRange> {
+            val candidates = mutableListOf<SpanRange>()
 
-        items.forEach { item ->
-            if (item.keyword.isEmpty()) return@forEach
+            items.forEach { item ->
+                if (item.keyword.isEmpty()) return@forEach
 
-            var fromIndex = 0
-            while (fromIndex < text.length) {
-                val start = text.indexOf(item.keyword, fromIndex)
-                if (start < 0) break
-                candidates += SpanRange(start, start + item.keyword.length, item)
-                fromIndex = start + item.keyword.length
-            }
-        }
-
-        if (candidates.isEmpty()) return emptyList()
-
-        val selected = mutableListOf<SpanRange>()
-        val occupied = BooleanArray(text.length)
-
-        candidates
-            .sortedWith(compareBy<SpanRange> { it.start }.thenByDescending { it.end - it.start })
-            .forEach { candidate ->
-                val overlaps = (candidate.start until candidate.end).any { occupied[it] }
-                if (!overlaps) {
-                    for (i in candidate.start until candidate.end) {
-                        occupied[i] = true
-                    }
-                    selected += candidate
+                var fromIndex = 0
+                while (fromIndex < text.length) {
+                    val start = text.indexOf(item.keyword, fromIndex)
+                    if (start < 0) break
+                    candidates += SpanRange(start, start + item.keyword.length, item)
+                    fromIndex = start + item.keyword.length
                 }
             }
 
-        return selected
+            if (candidates.isEmpty()) return emptyList()
+
+            val selected = mutableListOf<SpanRange>()
+            val occupied = BooleanArray(text.length)
+
+            candidates
+                .sortedWith(compareBy<SpanRange> { it.start }.thenByDescending { it.end - it.start })
+                .forEach { candidate ->
+                    val overlaps = (candidate.start until candidate.end).any { occupied[it] }
+                    if (!overlaps) {
+                        for (i in candidate.start until candidate.end) {
+                            occupied[i] = true
+                        }
+                        selected += candidate
+                    }
+                }
+
+            return selected
+        }
     }
 }

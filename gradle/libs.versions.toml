@@ -11,7 +11,7 @@ recyclerview = "1.4.0"
 viewpager2 = "1.1.0"
 material = "1.13.0"
 smartRefresh = "3.0.0-alpha"
-xpopup = "2.10.0"
+xpopup = "2.10.3"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -26,7 +26,7 @@ androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref =
 material = { module = "com.google.android.material:material", version.ref = "material" }
 smartrefresh-layout-kernel = { module = "io.github.scwang90:refresh-layout-kernel", version.ref = "smartRefresh" }
 smartrefresh-header-classics = { module = "io.github.scwang90:refresh-header-classics", version.ref = "smartRefresh" }
-xpopup = { module = "com.github.li-xiaojun:XPopup", version.ref = "xpopup" }
+xpopup = { module = "com.github.wukuiqing49:XPopup", version.ref = "xpopup" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

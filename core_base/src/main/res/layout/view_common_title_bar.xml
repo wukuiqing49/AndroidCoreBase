@@ -17,6 +17,7 @@
             android:maxLines="1"
             android:textColor="@color/white"
             android:textSize="18sp"
+            android:includeFontPadding="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,6 +53,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textSize="14sp"
+                android:includeFontPadding="false"
                 android:visibility="gone"
                 tools:text="返回"
                 tools:visibility="visible" />
@@ -77,6 +79,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textSize="14sp"
+                android:includeFontPadding="false"
                 android:visibility="gone"
                 tools:text="更多"
                 tools:visibility="visible" />

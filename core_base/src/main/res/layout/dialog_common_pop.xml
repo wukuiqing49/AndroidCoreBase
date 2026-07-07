@@ -10,33 +10,47 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="36dp"
         android:layout_marginRight="30dp"
         android:gravity="center"
         android:text="@string/base_dialog_common_title"
         android:textColor="#242433"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:includeFontPadding="false" />
 
     <TextView
         android:id="@+id/tv_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_marginLeft="30dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:layout_marginRight="30dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="40dp"
         android:gravity="center"
         android:text="@string/base_dialog_common_content"
-        android:textColor="#ff5c5c66" />
+        android:textColor="#ff5c5c66"
+        android:textSize="15sp"
+        android:includeFontPadding="false"
+        android:lineSpacingMultiplier="1.2" />
+
+    <FrameLayout
+        android:id="@+id/fl_custom_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="40dp"
+        android:visibility="gone" />
 
     <LinearLayout
+        android:id="@+id/ll_actions"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="48dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_marginBottom="24dp">
+        android:layout_marginBottom="32dp">
 
         <TextView
             android:id="@+id/tv_left"

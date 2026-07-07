@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -38,9 +39,7 @@ class EmptyView @JvmOverloads constructor(
             }
 
             val text = typedArray.getString(R.styleable.EmptyView_emptyText)
-            if (!text.isNullOrEmpty()) {
-                tvEmpty.text = text
-            }
+            setEmptyText(text)
 
             val textColor = typedArray.getColor(
                 R.styleable.EmptyView_emptyTextColor,
@@ -71,7 +70,12 @@ class EmptyView @JvmOverloads constructor(
     }
 
     fun setEmptyText(text: CharSequence?) {
-        tvEmpty.text = text
+        if (text.isNullOrEmpty()) {
+            tvEmpty.visibility = View.GONE
+        } else {
+            tvEmpty.text = text
+            tvEmpty.visibility = View.VISIBLE
+        }
     }
 
     fun setEmptyTextColor(@ColorInt color: Int) {
@@ -99,47 +103,48 @@ class EmptyView @JvmOverloads constructor(
             return@runCatching null
         }
 
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
+        options.inSampleSize = Companion.calculateInSampleSize(options.outHeight, options.outWidth, reqWidth, reqHeight)
         options.inJustDecodeBounds = false
         BitmapFactory.decodeResource(resources, resId, options)
     }.getOrNull()
 
-    private fun calculateInSampleSize(
-        options: BitmapFactory.Options,
-        reqWidth: Int,
-        reqHeight: Int
-    ): Int {
-        val height = options.outHeight
-        val width = options.outWidth
-        var inSampleSize = 1
-
-        if (height > reqHeight || width > reqWidth) {
-            val halfHeight = height / 2
-            val halfWidth = width / 2
-
-            while (halfHeight / inSampleSize >= reqHeight &&
-                halfWidth / inSampleSize >= reqWidth
-            ) {
-                inSampleSize *= 2
-            }
-        }
-
-        return inSampleSize
-    }
-
     private fun resolveTargetSize(layoutSize: Int?): Int {
-        return if (layoutSize != null && layoutSize > 0) {
-            layoutSize
-        } else {
-            defaultImageTargetSizePx
-        }
+        return Companion.resolveTargetSize(layoutSize, defaultImageTargetSizePx)
     }
 
     private fun dpToPx(value: Int): Int {
         return (value * resources.displayMetrics.density + 0.5f).toInt()
     }
 
-    private companion object {
+    internal companion object {
         private const val DEFAULT_EMPTY_IMAGE_TARGET_DP = 160
+
+        internal fun calculateInSampleSize(
+            outHeight: Int,
+            outWidth: Int,
+            reqWidth: Int,
+            reqHeight: Int
+        ): Int {
+            var inSampleSize = 1
+            if (outHeight > reqHeight || outWidth > reqWidth) {
+                val halfHeight = outHeight / 2
+                val halfWidth = outWidth / 2
+
+                while (halfHeight / inSampleSize >= reqHeight &&
+                    halfWidth / inSampleSize >= reqWidth
+                ) {
+                    inSampleSize *= 2
+                }
+            }
+            return inSampleSize
+        }
+
+        internal fun resolveTargetSize(layoutSize: Int?, defaultSizePx: Int): Int {
+            return if (layoutSize != null && layoutSize > 0) {
+                layoutSize
+            } else {
+                defaultSizePx
+            }
+        }
     }
 }
