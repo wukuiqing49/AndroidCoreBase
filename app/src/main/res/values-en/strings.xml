@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Core Base Demo</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="demo_home_title">core_base demos</string>
+    <string name="demo_home_intro">Choose a demo page to inspect inheritance, state handling, lists, widgets, and dialogs from core_base.</string>
+
+    <string name="demo_title_page_name">BaseTitleActivity</string>
+    <string name="demo_title_page_desc">Common title bar, left and right actions, and dynamic title updates.</string>
+    <string name="demo_vm_page_name">BaseVMTitleActivity</string>
+    <string name="demo_vm_page_desc">ViewModel state, Loading, Empty, Error, and one-shot events.</string>
+    <string name="demo_list_page_name">BaseListActivity</string>
+    <string name="demo_list_page_desc">Pull refresh, load more, empty state, and base adapter.</string>
+    <string name="demo_dialog_page_name">DialogKit</string>
+    <string name="demo_dialog_page_desc">Unified dialog exit for common, permission, loading, and custom-view dialogs.</string>
+    <string name="demo_widget_page_name">Widgets</string>
+    <string name="demo_widget_page_desc">Verification code input, rich text clicks, and basic widget composition.</string>
+
+    <string name="demo_right_action">Dialog</string>
+    <string name="demo_dependency">Base widgets loaded successfully</string>
+    <string name="demo_summary">This page demonstrates VerifyCodeInputView, MultiSpanTextView, and DialogKit.</string>
+    <string name="demo_verify_waiting">Enter a 4-digit verification code</string>
+    <string name="demo_verify_inputting">%1$d digits entered</string>
+    <string name="demo_verify_done">Verification code complete: %1$s</string>
+    <string name="demo_fill_code">Fill 2026</string>
+    <string name="demo_clear_code">Clear</string>
+    <string name="demo_protocol">I have read the User Agreement and Privacy Policy. Tap the blue text to trigger MultiSpanTextView callbacks.</string>
+    <string name="demo_protocol_user">User Agreement</string>
+    <string name="demo_protocol_privacy">Privacy Policy</string>
+    <string name="demo_show_dialog">Show DialogKit</string>
+    <string name="demo_show_loading">Show Loading</string>
+    <string name="demo_loading">Loading...</string>
+    <string name="demo_dialog_confirmed">Confirmed</string>
+
+    <string name="demo_title_intro">This page extends BaseTitleActivity. The page only provides content ViewBinding; title container, system bar adaptation, and back button are handled by the base class.</string>
+    <string name="demo_title_compact">Title updated</string>
+    <string name="demo_action_save">Save</string>
+    <string name="demo_action_done">Done</string>
+    <string name="demo_action_close">Close</string>
+    <string name="demo_saved">Save action triggered</string>
+    <string name="demo_done_clicked">Right-side Done clicked</string>
+    <string name="demo_right_text_changed">Right action text changed</string>
+    <string name="demo_left_text_changed">Left action text changed</string>
+    <string name="demo_change_title">Change title text</string>
+    <string name="demo_change_right_text">Change right action</string>
+    <string name="demo_change_left_text">Change left action</string>
+
+    <string name="demo_vm_intro">This page extends BaseVMTitleActivity. Buttons emit states or events from BaseViewModel; the base class handles Loading, Toast, and confirm dialogs by default.</string>
+    <string name="demo_state_idle">Current state: Idle</string>
+    <string name="demo_state_content">Current state: Content</string>
+    <string name="demo_state_loading">Current state: Loading %1$s</string>
+    <string name="demo_state_empty">Current state: Empty %1$s</string>
+    <string name="demo_state_error">Current state: Error %1$s</string>
+    <string name="demo_vm_content">Content</string>
+    <string name="demo_vm_empty">Empty</string>
+    <string name="demo_vm_error">Error</string>
+    <string name="demo_vm_toast">Toast</string>
+    <string name="demo_vm_confirm">Confirm</string>
+
+    <string name="demo_list_empty">No list data. Tap to retry.</string>
+    <string name="demo_list_item_title">Demo item %1$d</string>
+    <string name="demo_list_item_desc">From page %1$d. BaseListActivity has handled refresh and pagination states.</string>
+
+    <string name="demo_dialog_lab_title">DialogKit Lab</string>
+    <string name="demo_dialog_lab_intro">A focused test page for the unified dialog exit. Buttons use Material-style icons, and the page uses an immersive title bar.</string>
+    <string name="demo_dialog_group_common">Common dialogs</string>
+    <string name="demo_dialog_group_scene">Scene dialogs</string>
+    <string name="demo_dialog_common">Common confirm dialog</string>
+    <string name="demo_dialog_color">Custom text and button colors</string>
+    <string name="demo_dialog_long_text">Long text scroll test</string>
+    <string name="demo_dialog_loading">Loading dialog</string>
+    <string name="demo_dialog_permission">Permission guide dialog</string>
+    <string name="demo_dialog_custom">Title + custom content</string>
+    <string name="demo_dialog_raw">Full external View</string>
+    <string name="demo_dialog_common_title">Confirm action</string>
+    <string name="demo_dialog_common_desc">This is a common dialog shown by DialogKit.common(). The default style is fixed, while title, description, button text, and colors remain configurable.</string>
+    <string name="demo_dialog_color_title">Branded dialog</string>
+    <string name="demo_dialog_color_desc">This dialog demonstrates external configuration for title color, description color, button text colors, and button backgrounds.</string>
+    <string name="demo_dialog_long_title">Long text display</string>
+    <string name="demo_dialog_long_desc">This longer message is used to inspect layout, line spacing, and max-height behavior in a common dialog. When content exceeds the maximum height, it scrolls inside the content area while actions remain visible at the bottom. Try it on different screen sizes to verify readability and stability.</string>
+    <string name="demo_dialog_permission_title">Permission required</string>
+    <string name="demo_dialog_permission_desc">To continue the demo, go to system settings and enable the related permission.</string>
+    <string name="demo_dialog_permission_toast">Simulate opening settings</string>
+    <string name="demo_dialog_confirm_toast">Confirm clicked</string>
+    <string name="demo_dialog_custom_title">Custom content</string>
+    <string name="demo_dialog_custom_line_1">This is a content View passed from outside.</string>
+    <string name="demo_dialog_custom_line_2">DialogKit owns the title, actions, and popup container so business code can focus on the content area.</string>
+    <string name="demo_dialog_raw_title">Raw View</string>
+    <string name="demo_dialog_raw_desc">This dialog layout is fully controlled by the external View.</string>
+</resources>

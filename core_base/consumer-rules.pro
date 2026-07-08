@@ -25,3 +25,14 @@
 -keep,allowoptimization,allowobfuscation class * extends androidx.lifecycle.ViewModel {
     <init>(...);
 }
+
+# DialogKit is the public dialog facade exported by core_base. XPopup is created from code, but
+# keeping its runtime classes avoids integration issues when host apps enable aggressive shrinking.
+-keep class com.lxj.xpopup.** { *; }
+-dontwarn com.lxj.xpopup.**
+
+# Keep dialog facade method names stable for Java callers and binary consumers of published AARs.
+-keep class com.wkq.base.dialog.DialogKit { *; }
+-keep class com.wkq.base.dialog.CommonDialog { *; }
+-keep class com.wkq.base.dialog.LoadingDialog { *; }
+-keep class com.wkq.base.dialog.PopupHandle { *; }

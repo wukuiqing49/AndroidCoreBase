@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Core Base Demo</string>
+    <string name="cancel">取消</string>
+
     <string name="demo_home_title">core_base demos</string>
-    <string name="demo_home_intro">选择一个基础类测试页，查看 core_base 在业务页面里的继承、状态、列表和控件用法。</string>
+    <string name="demo_home_intro">选择一个基础能力测试页，查看 core_base 在业务页面中的继承、状态、列表、控件和弹框用法。</string>
+
     <string name="demo_title_page_name">BaseTitleActivity</string>
     <string name="demo_title_page_desc">通用标题栏、左右操作区、标题动态切换。</string>
     <string name="demo_vm_page_name">BaseVMTitleActivity</string>
     <string name="demo_vm_page_desc">ViewModel 状态、Loading、Empty、Error 和一次性事件。</string>
     <string name="demo_list_page_name">BaseListActivity</string>
     <string name="demo_list_page_desc">下拉刷新、上拉加载、空状态和基础 Adapter。</string>
-    <string name="demo_widget_page_name">Widgets &amp; Dialogs</string>
-    <string name="demo_widget_page_desc">验证码输入、富文本点击、确认弹窗和加载弹窗。</string>
-    <string name="demo_right_action">弹窗</string>
+    <string name="demo_dialog_page_name">DialogKit</string>
+    <string name="demo_dialog_page_desc">统一弹框出口，测试通用、权限、加载、自定义 View。</string>
+    <string name="demo_widget_page_name">Widgets</string>
+    <string name="demo_widget_page_desc">验证码输入、富文本点击和基础控件组合。</string>
+
+    <string name="demo_right_action">弹框</string>
     <string name="demo_dependency">基础控件引用成功</string>
-    <string name="demo_summary">这个页面演示 VerifyCodeInputView、MultiSpanTextView、CommonDialog 和 LoadingDialog。</string>
+    <string name="demo_summary">这个页面演示 VerifyCodeInputView、MultiSpanTextView 和 DialogKit。</string>
     <string name="demo_verify_waiting">请输入 4 位验证码</string>
     <string name="demo_verify_inputting">已输入 %1$d 位</string>
     <string name="demo_verify_done">验证码完成：%1$s</string>
@@ -22,12 +28,11 @@
     <string name="demo_protocol">我已阅读《用户协议》和《隐私政策》，点击蓝色文字可触发 MultiSpanTextView 的回调。</string>
     <string name="demo_protocol_user">《用户协议》</string>
     <string name="demo_protocol_privacy">《隐私政策》</string>
-    <string name="demo_show_dialog">显示 CommonDialog</string>
-    <string name="demo_show_loading">显示 LoadingDialog</string>
+    <string name="demo_show_dialog">显示 DialogKit</string>
+    <string name="demo_show_loading">显示 Loading</string>
     <string name="demo_loading">加载中...</string>
-    <string name="demo_dialog_title">core_base</string>
-    <string name="demo_dialog_message">这是来自基础库的通用确认弹窗。</string>
     <string name="demo_dialog_confirmed">已确认</string>
+
     <string name="demo_title_intro">这个页面继承 BaseTitleActivity。页面只提供内容 ViewBinding，标题栏容器、状态栏适配、返回按钮都由基类处理。</string>
     <string name="demo_title_compact">Title updated</string>
     <string name="demo_action_save">保存</string>
@@ -40,7 +45,8 @@
     <string name="demo_change_title">切换标题文字</string>
     <string name="demo_change_right_text">切换右侧操作</string>
     <string name="demo_change_left_text">切换左侧操作</string>
-    <string name="demo_vm_intro">这个页面继承 BaseVMTitleActivity。点击按钮后，由 BaseViewModel 发出状态或事件，基类负责默认 Loading、Toast、确认弹窗处理。</string>
+
+    <string name="demo_vm_intro">这个页面继承 BaseVMTitleActivity。点击按钮后，由 BaseViewModel 发出状态或事件，基类负责默认 Loading、Toast、确认弹框处理。</string>
     <string name="demo_state_idle">当前状态：Idle</string>
     <string name="demo_state_content">当前状态：Content</string>
     <string name="demo_state_loading">当前状态：Loading %1$s</string>
@@ -51,7 +57,35 @@
     <string name="demo_vm_error">Error</string>
     <string name="demo_vm_toast">Toast</string>
     <string name="demo_vm_confirm">Confirm</string>
+
     <string name="demo_list_empty">暂无列表数据，点击重试</string>
     <string name="demo_list_item_title">Demo item %1$d</string>
     <string name="demo_list_item_desc">来自第 %1$d 页，BaseListActivity 已处理刷新和分页状态。</string>
+
+    <string name="demo_dialog_lab_title">DialogKit Lab</string>
+    <string name="demo_dialog_lab_intro">这里集中测试统一弹框出口。按钮采用 Material 风格图标，页面使用沉浸式标题栏展示。</string>
+    <string name="demo_dialog_group_common">通用弹框</string>
+    <string name="demo_dialog_group_scene">场景弹框</string>
+    <string name="demo_dialog_common">普通确认弹框</string>
+    <string name="demo_dialog_color">自定义文字和按钮颜色</string>
+    <string name="demo_dialog_long_text">长文案滚动测试</string>
+    <string name="demo_dialog_loading">Loading 弹框</string>
+    <string name="demo_dialog_permission">权限引导弹框</string>
+    <string name="demo_dialog_custom">标题 + 自定义内容</string>
+    <string name="demo_dialog_raw">完整外部 View</string>
+    <string name="demo_dialog_common_title">确认操作</string>
+    <string name="demo_dialog_common_desc">这是一个由 DialogKit.common() 展示的通用弹框。默认样式固定，只开放标题、简介、按钮文字和颜色配置。</string>
+    <string name="demo_dialog_color_title">品牌化弹框</string>
+    <string name="demo_dialog_color_desc">这个弹框演示标题颜色、简介颜色、按钮文字颜色和按钮背景色的外部配置能力。</string>
+    <string name="demo_dialog_long_title">长文案展示</string>
+    <string name="demo_dialog_long_desc">这是一段较长的说明文字，用来观察通用弹框在多行文本下的排版、行距和最大高度限制。弹框内容超过最大高度后会自动滚动，按钮区域仍然保持在底部，避免被长文案挤出屏幕。你可以在不同尺寸的设备上检查它是否仍然清晰、稳定、易读。</string>
+    <string name="demo_dialog_permission_title">需要权限</string>
+    <string name="demo_dialog_permission_desc">为了继续完成演示，需要前往系统设置开启相关权限。</string>
+    <string name="demo_dialog_permission_toast">模拟前往设置</string>
+    <string name="demo_dialog_confirm_toast">已点击确认</string>
+    <string name="demo_dialog_custom_title">自定义内容</string>
+    <string name="demo_dialog_custom_line_1">这里是外部传入的内容 View。</string>
+    <string name="demo_dialog_custom_line_2">DialogKit 负责标题、按钮和弹框容器，业务可以专注构建内容区域。</string>
+    <string name="demo_dialog_raw_title">Raw View</string>
+    <string name="demo_dialog_raw_desc">这个弹框完全由外部 View 控制布局。</string>
 </resources>

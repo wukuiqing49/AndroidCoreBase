@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingStart="18dp"
-        android:paddingTop="16dp"
+        android:paddingTop="96dp"
         android:paddingEnd="18dp"
         android:paddingBottom="24dp">
 
@@ -84,6 +84,28 @@
 
                 <TextView
                     android:id="@+id/tvListDesc"
+                    style="@style/DemoMenuDesc" />
+            </LinearLayout>
+
+            <ImageView style="@style/DemoMenuArrow" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rowDialog"
+            style="@style/DemoMenuRow">
+
+            <ImageView
+                android:id="@+id/ivDialogIcon"
+                style="@style/DemoMenuIcon" />
+
+            <LinearLayout style="@style/DemoMenuTextBox">
+
+                <TextView
+                    android:id="@+id/tvDialogName"
+                    style="@style/DemoMenuTitle" />
+
+                <TextView
+                    android:id="@+id/tvDialogDesc"
                     style="@style/DemoMenuDesc" />
             </LinearLayout>
 

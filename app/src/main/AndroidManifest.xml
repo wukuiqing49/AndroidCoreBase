@@ -5,9 +5,13 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:resizeableActivity="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CoreBaseDemo">
+        <activity
+            android:name=".DialogDemoActivity"
+            android:exported="false" />
         <activity
             android:name=".WidgetDemoActivity"
             android:exported="false" />
