@@ -1,12 +1,7 @@
 package com.wkq.base.dialog
 
 import android.content.Context
-import android.graphics.Color
-import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
-import android.widget.FrameLayout
-import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.core.CenterPopupView
 import com.wkq.base.R
 
@@ -26,30 +21,20 @@ object CommonDialog {
         onCancel: (() -> Unit)? = null,
         onConfirm: () -> Unit
     ): PopupHandle {
-        val popupView = CommonCenterPopupView(
+        return DialogKit.confirm(
             context = context,
-            titleText = title,
-            contentText = message,
-            cancelText = cancelText,
+            title = title,
+            message = message,
             confirmText = confirmText,
-            confirmDanger = confirmDanger,
-            onCancelClick = onCancel,
-            onConfirmClick = {
+            cancelText = cancelText,
+            tone = if (confirmDanger) DialogTone.ERROR else DialogTone.NORMAL,
+            cancelable = cancelable,
+            onCancel = onCancel,
+            onConfirm = {
                 onConfirm()
                 true
             }
         )
-        XPopup.Builder(context)
-            .dismissOnTouchOutside(cancelable)
-            .dismissOnBackPressed(cancelable)
-            .moveUpToKeyboard(false)
-            .hasShadowBg(true)
-            .isViewMode(true)
-            .enableDrag(false)
-            .isDestroyOnDismiss(true)
-            .asCustom(popupView)
-            .show()
-        return popupView.asHandle()
     }
 
     fun showContent(
@@ -67,31 +52,35 @@ object CommonDialog {
         onCancel: (() -> Unit)? = null,
         onDismiss: (() -> Unit)? = null
     ): PopupHandle {
-        val popupView = CommonCenterPopupView(
+        val tone = if (confirmDanger) DialogTone.ERROR else DialogTone.NORMAL
+        return DialogKit.custom(
             context = context,
-            titleText = title,
-            contentText = null,
-            cancelText = cancelText,
-            confirmText = confirmText,
-            neutralText = neutralText,
-            confirmDanger = confirmDanger,
+            title = title,
+            contentView = contentView,
             scrollable = scrollable,
-            onCancelClick = onCancel,
-            onConfirmClick = onConfirm,
-            onNeutralClick = onNeutral,
-            customContentView = contentView
+            tone = tone,
+            cancelable = cancelable,
+            onDismiss = onDismiss,
+            actions = buildList {
+                if (!neutralText.isNullOrEmpty()) {
+                    add(DialogAction(neutralText, DialogActionRole.SECONDARY) {
+                        onNeutral?.invoke()
+                        true
+                    })
+                }
+                if (cancelText.isNotEmpty()) {
+                    add(DialogAction(cancelText, DialogActionRole.SECONDARY) {
+                        onCancel?.invoke()
+                        true
+                    })
+                }
+                if (confirmText.isNotEmpty()) {
+                    add(DialogAction(confirmText, if (confirmDanger) DialogActionRole.DANGER else DialogActionRole.PRIMARY) {
+                        onConfirm?.invoke() ?: true
+                    })
+                }
+            }
         )
-        XPopup.Builder(context)
-            .dismissOnTouchOutside(cancelable)
-            .dismissOnBackPressed(cancelable)
-            .moveUpToKeyboard(false)
-            .hasShadowBg(true)
-            .isViewMode(true)
-            .enableDrag(false)
-            .isDestroyOnDismiss(true)
-            .asCustom(popupView)
-            .show()
-        return popupView.asHandle()
     }
 
     fun showRawCenter(
@@ -100,18 +89,15 @@ object CommonDialog {
         cancelable: Boolean = true,
         onDismiss: (() -> Unit)? = null
     ): PopupHandle {
-        val popupView = CommonRawCenterPopupView(context, contentView, onDismiss)
-        XPopup.Builder(context)
-            .dismissOnTouchOutside(cancelable)
-            .dismissOnBackPressed(cancelable)
-            .moveUpToKeyboard(false)
-            .hasShadowBg(true)
-            .isViewMode(true)
-            .enableDrag(false)
-            .isDestroyOnDismiss(true)
-            .asCustom(popupView)
-            .show()
-        return popupView.asHandle()
+        return DialogKit.rawView(
+            context = context,
+            contentView = contentView,
+            options = DialogOptions(
+                cancelable = cancelable,
+                widthRatio = 0.90f,
+                onDismiss = onDismiss
+            )
+        )
     }
 
     fun show(
@@ -137,67 +123,64 @@ object CommonDialog {
         onNeutralClick: (() -> Unit)? = null,
         customContentView: View? = null
     ): PopupHandle {
-        val popupView = CommonCenterPopupView(
+        val content = when {
+            customContentView != null -> DialogContent.Custom(customContentView, scrollable)
+            !contentText.isNullOrEmpty() -> DialogContent.Text(contentText)
+            else -> null
+        }
+        val tone = if (confirmDanger) DialogTone.ERROR else DialogTone.NORMAL
+        return DialogKit.show(
             context = context,
-            titleText = titleText,
-            contentText = contentText,
-            cancelText = cancelText,
-            confirmText = confirmText,
-            neutralText = neutralText,
-            titleColor = titleColor,
-            contentColor = contentColor,
-            cancelColor = cancelColor,
-            confirmColor = confirmColor,
-            neutralColor = neutralColor,
-            cancelBgColor = cancelBgColor,
-            confirmBgColor = confirmBgColor,
-            neutralBgColor = neutralBgColor,
-            confirmDanger = confirmDanger,
-            scrollable = scrollable,
-            onCancelClick = onCancelClick,
-            onConfirmClick = onConfirmClick,
-            onNeutralClick = onNeutralClick,
-            customContentView = customContentView
-        )
-        XPopup.Builder(context)
-            .dismissOnTouchOutside(cancelable)
-            .dismissOnBackPressed(cancelable)
-            .moveUpToKeyboard(false)
-            .hasShadowBg(true)
-            .isViewMode(true)
-            .enableDrag(false)
-            .isDestroyOnDismiss(true)
-            .asCustom(popupView)
-            .show()
-        return popupView.asHandle()
-    }
-}
-
-private class CommonRawCenterPopupView(
-    context: Context,
-    private val popupContentView: View,
-    private val onDismissCallback: (() -> Unit)?
-) : CenterPopupView(context) {
-
-    override fun addInnerContent() {
-        centerPopupContainer.setBackgroundColor(Color.TRANSPARENT)
-        (popupContentView.parent as? ViewGroup)?.removeView(popupContentView)
-        val popupWidth = (resources.displayMetrics.widthPixels * 0.90f).toInt()
-            .coerceAtMost(dp(460))
-        centerPopupContainer.addView(
-            popupContentView,
-            FrameLayout.LayoutParams(popupWidth, FrameLayout.LayoutParams.WRAP_CONTENT).apply {
-                gravity = Gravity.CENTER
-            }
+            state = DialogState(
+                title = titleText,
+                content = content,
+                titleColor = titleColor,
+                contentColor = contentColor,
+                tone = tone,
+                options = DialogOptions(cancelable = cancelable),
+                actions = buildList {
+                    if (!neutralText.isNullOrEmpty()) {
+                        add(
+                            DialogAction(
+                                text = neutralText,
+                                role = DialogActionRole.SECONDARY,
+                                textColor = neutralColor,
+                                backgroundColor = neutralBgColor
+                            ) {
+                                onNeutralClick?.invoke()
+                                true
+                            }
+                        )
+                    }
+                    if (!cancelText.isNullOrEmpty()) {
+                        add(
+                            DialogAction(
+                                text = cancelText,
+                                role = DialogActionRole.SECONDARY,
+                                textColor = cancelColor,
+                                backgroundColor = cancelBgColor
+                            ) {
+                                onCancelClick?.invoke()
+                                true
+                            }
+                        )
+                    }
+                    if (!confirmText.isNullOrEmpty()) {
+                        add(
+                            DialogAction(
+                                text = confirmText,
+                                role = if (confirmDanger) DialogActionRole.DANGER else DialogActionRole.PRIMARY,
+                                textColor = confirmColor,
+                                backgroundColor = confirmBgColor
+                            ) {
+                                onConfirmClick?.invoke() ?: true
+                            }
+                        )
+                    }
+                }
+            )
         )
     }
-
-    override fun onDismiss() {
-        super.onDismiss()
-        onDismissCallback?.invoke()
-    }
-
-    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 }
 
 internal fun CenterPopupView.asHandle(): PopupHandle {

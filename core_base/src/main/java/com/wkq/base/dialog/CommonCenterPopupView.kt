@@ -39,7 +39,14 @@ class CommonCenterPopupView(
     var onCancelClick: (() -> Unit)? = null,
     var onConfirmClick: (() -> Boolean)? = null,
     var onNeutralClick: (() -> Unit)? = null,
-    var customContentView: View? = null
+    var customContentView: View? = null,
+    var actions: List<DialogAction>? = null,
+    var tone: DialogTone = DialogTone.NORMAL,
+    var popupWidthRatio: Float = 0.88f,
+    var maxWidthDp: Int = 460,
+    var maxContentHeightRatio: Float = 0.55f,
+    var spacing: DialogSpacing = DialogSpacing(),
+    var onDismissCallback: (() -> Unit)? = null
 ) : CenterPopupView(context) {
 
     companion object {
@@ -52,8 +59,8 @@ class CommonCenterPopupView(
 
     override fun addInnerContent() {
         centerPopupContainer.setBackgroundColor(Color.TRANSPARENT)
-        val popupWidth = (resources.displayMetrics.widthPixels * 0.88f).toInt()
-            .coerceAtMost(dp(460))
+        val popupWidth = (resources.displayMetrics.widthPixels * popupWidthRatio).toInt()
+            .coerceAtMost(dp(maxWidthDp))
         centerPopupContainer.addView(
             binding.root,
             FrameLayout.LayoutParams(popupWidth, FrameLayout.LayoutParams.WRAP_CONTENT).apply {
@@ -67,7 +74,19 @@ class CommonCenterPopupView(
         initView()
     }
 
+    override fun onDismiss() {
+        super.onDismiss()
+        onDismissCallback?.invoke()
+    }
+
     private fun initView() {
+        binding.root.setPadding(
+            dp(spacing.horizontalPaddingDp),
+            dp(spacing.topPaddingDp),
+            dp(spacing.horizontalPaddingDp),
+            dp(spacing.bottomPaddingDp)
+        )
+
         // 1. Setup Title
         if (titleText.isNullOrEmpty()) {
             binding.tvTitle.visibility = View.GONE
@@ -80,20 +99,34 @@ class CommonCenterPopupView(
         }
 
         // 2. Setup Content
-        val topMargin = if (titleText.isNullOrEmpty()) dp(36) else dp(32)
+        val topMargin = if (titleText.isNullOrEmpty()) {
+            dp(spacing.contentTopWithoutTitleDp)
+        } else {
+            dp(spacing.contentTopWithTitleDp)
+        }
+        val bottomMargin = if (hasVisibleActions()) {
+            dp(spacing.contentBottomWithActionsDp)
+        } else {
+            dp(spacing.contentBottomWithoutActionsDp)
+        }
         if (!contentText.isNullOrEmpty()) {
-            binding.tvContent.apply {
-                text = contentText
-                contentColor?.let { setTextColor(it) }
+            binding.tvContent.visibility = View.GONE
+            binding.flCustomContainer.apply {
                 visibility = View.VISIBLE
-                (layoutParams as LinearLayout.LayoutParams).topMargin = topMargin
+                (layoutParams as LinearLayout.LayoutParams).apply {
+                    this.topMargin = topMargin
+                    this.bottomMargin = bottomMargin
+                }
             }
-            binding.flCustomContainer.visibility = View.GONE
+            setupTextContentView(contentText!!)
         } else if (customContentView != null) {
             binding.tvContent.visibility = View.GONE
             binding.flCustomContainer.apply {
                 visibility = View.VISIBLE
-                (layoutParams as LinearLayout.LayoutParams).topMargin = topMargin
+                (layoutParams as LinearLayout.LayoutParams).apply {
+                    this.topMargin = topMargin
+                    this.bottomMargin = bottomMargin
+                }
             }
             setupCustomContentView()
         } else {
@@ -105,13 +138,49 @@ class CommonCenterPopupView(
         setupActions()
     }
 
+    private fun hasVisibleActions(): Boolean {
+        val configuredActions = actions
+        if (configuredActions != null) {
+            return configuredActions.any { it.text.isNotBlank() }
+        }
+        return !neutralText.isNullOrEmpty() || !cancelText.isNullOrEmpty() || !confirmText.isNullOrEmpty()
+    }
+
+    private fun setupTextContentView(textValue: CharSequence) {
+        binding.flCustomContainer.removeAllViews()
+        val textView = TextView(context).apply {
+            text = textValue
+            gravity = if (textValue.length > 80) Gravity.START else Gravity.CENTER
+            includeFontPadding = false
+            textSize = 14f
+            setTextColor(contentColor ?: Color.parseColor("#ff5c5c66"))
+            setLineSpacing(0f, 1.2f)
+        }
+        binding.flCustomContainer.addView(
+            MaxHeightScrollView(context, maxContentHeight()).apply {
+                isFillViewport = false
+                addView(
+                    textView,
+                    FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT
+                    )
+                )
+            },
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+    }
+
     private fun setupCustomContentView() {
         val contentView = customContentView ?: return
         (contentView.parent as? ViewGroup)?.removeView(contentView)
 
         binding.flCustomContainer.removeAllViews()
         if (scrollable) {
-            val scrollView = ScrollView(context).apply {
+            val scrollView = MaxHeightScrollView(context, maxContentHeight()).apply {
                 isFillViewport = false
                 addView(
                     contentView,
@@ -140,6 +209,12 @@ class CommonCenterPopupView(
     }
 
     private fun setupActions() {
+        val configuredActions = actions
+        if (configuredActions != null) {
+            setupConfiguredActions(configuredActions)
+            return
+        }
+
         val buttons = mutableListOf<TextView>()
 
         // 1. Neutral Button
@@ -147,10 +222,13 @@ class CommonCenterPopupView(
             val tvNeutral = TextView(context).apply {
                 text = neutralText
                 gravity = Gravity.CENTER
-                textSize = 13f
+                textSize = 14f
                 neutralColor?.let { setTextColor(it) } ?: setTextColor(Color.parseColor("#ff242433"))
                 background = neutralBgColor?.let { roundRect(it, dp(8).toFloat()) }
                     ?: roundRect(Color.TRANSPARENT, dp(8).toFloat(), strokeColor = DIVIDER)
+                minHeight = dp(44)
+                maxLines = 2
+                setPadding(dp(12), dp(6), dp(12), dp(6))
                 setOnClickListener {
                     onNeutralClick?.invoke()
                     dismiss()
@@ -200,15 +278,87 @@ class CommonCenterPopupView(
         binding.llActions.removeAllViews()
         buttons.forEachIndexed { index, button ->
             (button.parent as? ViewGroup)?.removeView(button)
-            val lp = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f).apply {
+            val lp = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
                 if (index < buttons.size - 1) {
                     rightMargin = dp(12) // Space between buttons
+                }
+            }
+            button.minHeight = dp(44)
+            button.maxLines = 2
+            button.setPadding(dp(12), dp(6), dp(12), dp(6))
+            binding.llActions.addView(button, lp)
+        }
+
+        binding.llActions.visibility = if (buttons.isEmpty()) View.GONE else View.VISIBLE
+    }
+
+    private fun setupConfiguredActions(configuredActions: List<DialogAction>) {
+        val visibleActions = configuredActions.filter { it.text.isNotBlank() }
+        binding.llActions.removeAllViews()
+        binding.llActions.orientation = if (visibleActions.size <= 2) {
+            LinearLayout.HORIZONTAL
+        } else {
+            LinearLayout.VERTICAL
+        }
+
+        visibleActions.forEachIndexed { index, action ->
+            val button = TextView(context).apply {
+                text = action.text
+                gravity = Gravity.CENTER
+                includeFontPadding = false
+                textSize = 14f
+                minHeight = dp(44)
+                maxLines = 2
+                setPadding(dp(12), dp(6), dp(12), dp(6))
+                setTextColor(action.textColor ?: textColorForRole(action.role))
+                background = action.backgroundColor?.let { roundRect(it, dp(8).toFloat()) }
+                    ?: backgroundForRole(action.role)
+                setOnClickListener {
+                    val shouldDismiss = action.onClick?.invoke() ?: true
+                    if (shouldDismiss) dismiss()
+                }
+            }
+            val lp = if (visibleActions.size <= 2) {
+                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+                    if (index < visibleActions.lastIndex) rightMargin = dp(12)
+                }
+            } else {
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    if (index > 0) topMargin = dp(10)
                 }
             }
             binding.llActions.addView(button, lp)
         }
 
-        binding.llActions.visibility = if (buttons.isEmpty()) View.GONE else View.VISIBLE
+        binding.llActions.visibility = if (visibleActions.isEmpty()) View.GONE else View.VISIBLE
+    }
+
+    private fun backgroundForRole(role: DialogActionRole): GradientDrawable {
+        return when (role) {
+            DialogActionRole.PRIMARY -> roundRect(colorForTone(tone), dp(8).toFloat())
+            DialogActionRole.DANGER -> roundRect(DANGER, dp(8).toFloat())
+            DialogActionRole.SECONDARY -> roundRect(Color.TRANSPARENT, dp(8).toFloat(), strokeColor = DIVIDER)
+        }
+    }
+
+    private fun textColorForRole(role: DialogActionRole): Int {
+        return when (role) {
+            DialogActionRole.PRIMARY, DialogActionRole.DANGER -> Color.WHITE
+            DialogActionRole.SECONDARY -> Color.parseColor("#ff242433")
+        }
+    }
+
+    private fun colorForTone(tone: DialogTone): Int {
+        return when (tone) {
+            DialogTone.NORMAL -> PRIMARY
+            DialogTone.SUCCESS -> Color.rgb(22, 163, 74)
+            DialogTone.WARNING -> Color.rgb(217, 119, 6)
+            DialogTone.ERROR -> DANGER
+            DialogTone.PERMISSION -> PRIMARY
+        }
     }
 
     private fun roundRect(color: Int, radius: Float, strokeColor: Int = Color.TRANSPARENT): GradientDrawable {
@@ -222,4 +372,19 @@ class CommonCenterPopupView(
     }
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
+
+    private fun maxContentHeight(): Int {
+        return (resources.displayMetrics.heightPixels * maxContentHeightRatio).toInt()
+    }
+}
+
+private class MaxHeightScrollView(
+    context: Context,
+    private val maxHeight: Int
+) : ScrollView(context) {
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val limitedHeightSpec = MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.AT_MOST)
+        super.onMeasure(widthMeasureSpec, limitedHeightSpec)
+    }
 }

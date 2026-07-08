@@ -9,8 +9,7 @@ import com.wkq.base.BaseUiEvent
 import com.wkq.base.BaseUiState
 import com.wkq.base.BaseViewModel
 import com.wkq.base.ConfirmDialogResult
-import com.wkq.base.dialog.CommonDialog
-import com.wkq.base.dialog.LoadingDialog
+import com.wkq.base.dialog.DialogKit
 import com.wkq.base.dialog.PopupHandle
 
 /**
@@ -73,7 +72,7 @@ internal class BaseUiDelegate(
     private fun showLoading(message: String?) {
         val context = contextProvider() ?: return
         if (loadingHandle?.isShowing() == true) return
-        loadingHandle = LoadingDialog.show(
+        loadingHandle = DialogKit.loading(
             context = context,
             message = message ?: context.getString(com.wkq.base.R.string.base_loading)
         )
@@ -107,7 +106,7 @@ internal class BaseUiDelegate(
     private fun showConfirmDialog(event: BaseUiEvent.ConfirmDialog) {
         val context = contextProvider() ?: return
         val viewModel = viewModelProvider?.invoke()
-        CommonDialog.showConfirm(
+        DialogKit.confirm(
             context = context,
             title = event.title,
             message = event.message,
@@ -118,6 +117,7 @@ internal class BaseUiDelegate(
             },
             onConfirm = {
                 viewModel?.onConfirmDialogResult(event.requestKey, ConfirmDialogResult.CONFIRM)
+                true
             }
         )
     }

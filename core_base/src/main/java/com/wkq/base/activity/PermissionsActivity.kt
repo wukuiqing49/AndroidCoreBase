@@ -9,21 +9,17 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.lxj.xpopup.XPopup
 import com.wkq.base.R
-import com.wkq.base.dialog.CommonPopupListener
-import com.wkq.base.dialog.PermissionsPopupView
-
+import com.wkq.base.dialog.DialogKit
 
 /**
- * 专门处理权限申请的基类 Activity
+ * Base Activity for app permission requests.
  */
 open class PermissionsActivity : AppCompatActivity() {
 
     private var permissionType = -1
     private var permissionList = mutableListOf<String>()
 
-    // 权限请求启动器
     private val requestPermissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -36,100 +32,54 @@ open class PermissionsActivity : AppCompatActivity() {
                 grantedPermissions.add(entry.key)
             } else {
                 deniedPermissions.add(entry.key)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (isPermissionPermanentlyDenied(entry.key)) {
-                        permanentlyDeniedPermissions.add(entry.key)
-                    }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isPermissionPermanentlyDenied(entry.key)) {
+                    permanentlyDeniedPermissions.add(entry.key)
                 }
             }
         }
 
-        if (deniedPermissions.isEmpty()) {
-            authorized(permissionType, grantedPermissions)
-        } else {
-            if (permanentlyDeniedPermissions.isNotEmpty()) {
-                // 如果权限被永久拒绝，弹窗引导用户去设置页面
-
-                XPopup.Builder(this).dismissOnTouchOutside(false).dismissOnBackPressed(true)
-                    .moveUpToKeyboard(false).hasShadowBg(true)  //
-                    .isViewMode(true).enableDrag(false)
-
-                    // 和baseActivity设置的导航颜色统一
-                    .isLightStatusBar(true) // 默认修改状态栏为亮色，dialog有效
-                    .isDestroyOnDismiss(true) //对于只使用一次的弹窗，推荐设置这个
-                    .asCustom(
-                        PermissionsPopupView(
-                            this, getString(R.string.permission_request_title),
-                            getString(R.string.permission_permanently_denied),
-                            getString(R.string.go_to_settings), object : CommonPopupListener {
-                                override fun sureClick() {
-                                    openAppDetailsSettings()
-                                }
-
-                                override fun cancelClick() {}
-                            })
-                    )
-            } else {
-                // 部分权限被拒绝，给个提示
-                Toast.makeText(
-                    this,
-                    getString(R.string.partial_permission_denied, deniedPermissions.joinToString()),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+        when {
+            deniedPermissions.isEmpty() -> authorized(permissionType, grantedPermissions)
+            permanentlyDeniedPermissions.isNotEmpty() -> showAppSettingsPermissionDialog()
+            else -> Toast.makeText(
+                this,
+                getString(R.string.partial_permission_denied, deniedPermissions.joinToString()),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
-    // 设置页面返回后的监听
     private val openSettingsLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val allPermissionsGranted = permissionList.all { isGrantedOne(it) }
-            if (allPermissionsGranted) {
-                Toast.makeText(this, getString(R.string.permissions_granted), Toast.LENGTH_SHORT).show()
+            val message = if (allPermissionsGranted) {
+                getString(R.string.permissions_granted)
             } else {
-                Toast.makeText(this, getString(R.string.permissions_not_granted), Toast.LENGTH_SHORT).show()
+                getString(R.string.permissions_not_granted)
             }
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
 
-    /**
-     * 请求应用权限
-     * @param type 权限业务类型标识
-     * @param permissions 权限列表
-     */
     fun requestAppPermissions(type: Int, permissions: List<String>) {
         permissionType = type
         permissionList = permissions.toMutableList()
         requestPermissionsLauncher.launch(permissions.toTypedArray())
     }
 
-    /**
-     * 检查是否已拥有指定权限
-     */
     fun isGranted(permissions: List<String>?): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
         return permissions?.all { isGrantedOne(it) } ?: false
     }
 
     private fun isGrantedOne(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this, permission
-        ) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
     }
 
-    /**
-     * 判断权限是否被永久拒绝
-     */
     private fun isPermissionPermanentlyDenied(permission: String): Boolean {
-        return !shouldShowRequestPermissionRationale(
-            permission
-        ) && ContextCompat.checkSelfPermission(
-            this, permission
-        ) != PackageManager.PERMISSION_GRANTED
+        return !shouldShowRequestPermissionRationale(permission) &&
+            ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
     }
 
-    /**
-     * 获取当前系统适配的媒体权限（自动兼容 Android 13/14）
-     */
     fun getMediaPermissions(): MutableList<String> {
         return when {
             Build.VERSION.SDK_INT >= 34 -> mutableListOf(
@@ -150,9 +100,6 @@ open class PermissionsActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * 跳转至系统设置页面
-     */
     fun openSettingsPage(action: String, configure: (Intent.() -> Unit)? = null) {
         val intent = Intent(action).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -161,9 +108,6 @@ open class PermissionsActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    /**
-     * 跳转至应用设置详情页
-     */
     fun openAppDetailsSettings() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.fromParts("package", packageName, null)
@@ -172,41 +116,37 @@ open class PermissionsActivity : AppCompatActivity() {
         openSettingsLauncher.launch(intent)
     }
 
-    /**
-     * 跳转通知设置页面
-     */
     fun openNotificationSettings() {
-        XPopup.Builder(this).dismissOnTouchOutside(false).dismissOnBackPressed(true)
-            .moveUpToKeyboard(false).hasShadowBg(true)  //
-            .isViewMode(true).enableDrag(false)
-
-            // 和baseActivity设置的导航颜色统一
-            .isLightStatusBar(true) // 默认修改状态栏为亮色，dialog有效
-            .isDestroyOnDismiss(true) //对于只使用一次的弹窗，推荐设置这个
-            .asCustom(
-                PermissionsPopupView(
-                    this, getString(R.string.permission_request_setting_title),
-                    getString(R.string.permissions_granted_setting),
-                    getString(R.string.go_to_settings), object : CommonPopupListener {
-                        override fun sureClick() {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                openSettingsPage(Settings.ACTION_APP_NOTIFICATION_SETTINGS) {
-                                    putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-                                }
-                            } else {
-                                openAppDetailsSettings()
-                            }
-                        }
-
-                        override fun cancelClick() {}
-                    })
-            )
+        DialogKit.permission(
+            context = this,
+            title = getString(R.string.permission_request_setting_title),
+            message = getString(R.string.permissions_granted_setting),
+            confirmText = getString(R.string.go_to_settings),
+            onConfirm = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    openSettingsPage(Settings.ACTION_APP_NOTIFICATION_SETTINGS) {
+                        putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+                    }
+                } else {
+                    openAppDetailsSettings()
+                }
+                true
+            }
+        )
     }
 
-    /**
-     * 权限请求成功回调
-     * @param permissionType 请求时传入的类型标识
-     * @param permissionList 已授权的权限列表
-     */
-    open fun authorized(permissionType: Int, permissionList: MutableList<String>) {}
+    private fun showAppSettingsPermissionDialog() {
+        DialogKit.permission(
+            context = this,
+            title = getString(R.string.permission_request_title),
+            message = getString(R.string.permission_permanently_denied),
+            confirmText = getString(R.string.go_to_settings),
+            onConfirm = {
+                openAppDetailsSettings()
+                true
+            }
+        )
+    }
+
+    open fun authorized(permissionType: Int, permissionList: MutableList<String>) = Unit
 }
