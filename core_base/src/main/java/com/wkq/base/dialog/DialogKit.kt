@@ -17,6 +17,13 @@ import com.wkq.base.R
 
 object DialogKit {
 
+    /**
+     * Recommended entry for daily business dialogs.
+     *
+     * The stable business surface is intentionally small: title, description, button text,
+     * text colors, and button background colors. Caller-provided copy should already come from
+     * localized string resources.
+     */
     fun common(
         context: Context,
         title: CharSequence? = null,
@@ -59,6 +66,10 @@ object DialogKit {
         return popupView.asHandle()
     }
 
+    /**
+     * Fully configurable dialog entry for custom actions, custom content, and advanced options.
+     * Prefer [common] when a page only needs a regular confirm/cancel dialog.
+     */
     fun show(context: Context, state: DialogState): PopupHandle {
         val content = state.content
         val popupView = CommonCenterPopupView(
@@ -81,6 +92,9 @@ object DialogKit {
         return popupView.asHandle()
     }
 
+    /**
+     * Confirm/cancel shortcut used by ViewModel events and other two-action flows.
+     */
     fun confirm(
         context: Context,
         title: CharSequence,
@@ -111,6 +125,9 @@ object DialogKit {
         )
     }
 
+    /**
+     * One-button message dialog for neutral notices and status-style dialogs.
+     */
     fun message(
         context: Context,
         title: CharSequence,
@@ -138,6 +155,7 @@ object DialogKit {
         )
     }
 
+    /** Success message shortcut using the common message shell. */
     fun success(
         context: Context,
         title: CharSequence,
@@ -149,6 +167,7 @@ object DialogKit {
         return message(context, title, message, confirmText, DialogTone.SUCCESS, options.cancelable, options, onConfirm)
     }
 
+    /** Warning message shortcut using the common message shell. */
     fun warning(
         context: Context,
         title: CharSequence,
@@ -160,6 +179,7 @@ object DialogKit {
         return message(context, title, message, confirmText, DialogTone.WARNING, options.cancelable, options, onConfirm)
     }
 
+    /** Error/danger message shortcut using the common message shell. */
     fun error(
         context: Context,
         title: CharSequence,
@@ -171,6 +191,9 @@ object DialogKit {
         return message(context, title, message, confirmText, DialogTone.ERROR, options.cancelable, options, onConfirm)
     }
 
+    /**
+     * Permission guide dialog. It is non-cancelable by default so the settings action is clear.
+     */
     fun permission(
         context: Context,
         title: CharSequence = context.getString(R.string.permission_request_title),
@@ -200,6 +223,10 @@ object DialogKit {
         )
     }
 
+    /**
+     * Common shell with external content. DialogKit owns title, actions, max height, and scrolling;
+     * caller owns the content view.
+     */
     fun custom(
         context: Context,
         title: CharSequence? = null,
@@ -223,6 +250,10 @@ object DialogKit {
         )
     }
 
+    /**
+     * Raw external view dialog. Use when the caller owns the full visual layout and DialogKit only
+     * provides the popup container plus [PopupHandle].
+     */
     fun rawView(
         context: Context,
         contentView: View,
@@ -239,6 +270,9 @@ object DialogKit {
         return popupView.asHandle()
     }
 
+    /**
+     * Loading dialog. Store the returned [PopupHandle] and dismiss it when async work finishes.
+     */
     fun loading(
         context: Context,
         message: CharSequence = context.getString(R.string.base_loading),
