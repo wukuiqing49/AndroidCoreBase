@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -12,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import com.lxj.xpopup.core.CenterPopupView
+import com.wkq.base.R
 import com.wkq.base.databinding.DialogCommonPopBinding
 
 /**
@@ -55,22 +55,19 @@ class CommonCenterPopupView(
         private val DIVIDER = Color.rgb(228, 231, 236)
     }
 
-    private val binding = DialogCommonPopBinding.inflate(LayoutInflater.from(context))
+    private lateinit var binding: DialogCommonPopBinding
 
-    override fun addInnerContent() {
-        centerPopupContainer.setBackgroundColor(Color.TRANSPARENT)
-        val popupWidth = (resources.displayMetrics.widthPixels * popupWidthRatio).toInt()
+    override val implLayoutId: Int
+        get() = R.layout.dialog_common_pop
+
+    override val maxWidth: Int
+        get() = (resources.displayMetrics.widthPixels * popupWidthRatio).toInt()
             .coerceAtMost(dp(maxWidthDp))
-        centerPopupContainer.addView(
-            binding.root,
-            FrameLayout.LayoutParams(popupWidth, FrameLayout.LayoutParams.WRAP_CONTENT).apply {
-                gravity = Gravity.CENTER
-            }
-        )
-    }
 
     override fun onCreate() {
         super.onCreate()
+        centerPopupContainer.setBackgroundColor(Color.TRANSPARENT)
+        binding = DialogCommonPopBinding.bind(requireNotNull(contentView))
         initView()
     }
 

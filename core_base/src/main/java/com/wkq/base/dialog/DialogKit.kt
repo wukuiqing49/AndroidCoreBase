@@ -402,9 +402,13 @@ private class DialogKitLoadingPopupView(
     private val onDismissCallback: (() -> Unit)?
 ) : CenterPopupView(context) {
 
-    override fun addInnerContent() {
+    override val implLayoutId: Int
+        get() = R.layout.xpopup_content_container
+
+    override fun onCreate() {
+        super.onCreate()
         centerPopupContainer.setBackgroundColor(Color.TRANSPARENT)
-        centerPopupContainer.addView(
+        (requireNotNull(contentView) as FrameLayout).addView(
             LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
                 gravity = Gravity.CENTER
@@ -430,12 +434,6 @@ private class DialogKitLoadingPopupView(
                         topMargin = dp(14)
                     }
                 )
-            },
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                gravity = Gravity.CENTER
             }
         )
     }
@@ -455,10 +453,16 @@ private class DialogKitRawViewPopupView(
     private val useConfiguredWidth: Boolean
 ) : CenterPopupView(context) {
 
-    override fun addInnerContent() {
+    override val implLayoutId: Int
+        get() = R.layout.xpopup_content_container
+
+    override fun onCreate() {
+        super.onCreate()
         centerPopupContainer.setBackgroundColor(Color.TRANSPARENT)
         (rawContentView.parent as? ViewGroup)?.removeView(rawContentView)
-        centerPopupContainer.addView(rawContentView, createLayoutParams())
+        val container = requireNotNull(contentView) as FrameLayout
+        container.layoutParams = createLayoutParams()
+        container.addView(rawContentView)
     }
 
     override fun onDismiss() {
