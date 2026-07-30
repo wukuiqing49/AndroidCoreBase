@@ -750,6 +750,9 @@ override fun authorized(permissionType: Int, permissionList: MutableList<String>
 - 普通 Activity 默认已处理根布局 Insets。
 - 标题页默认由 `CommonTitleBar` 处理顶部 Insets。
 - 列表页默认处理底部导航栏和手势区域。
+- `targetSdk 36` 下 edge-to-edge 无法退出；基础页面默认同时避开横屏导航栏和刘海区域。
+- 普通内容不会因为左右返回手势区而整体缩进；贴边按钮或滑动控件按需调用 `applyHorizontalGestureInset()`。
+- `DialogKit` 使用 XPopup `SafeArea`：遮罩延伸到系统栏，弹窗前景自动避开状态栏、刘海和导航栏。
 - 全屏页关键控件需要按需手动处理。
 - 不要使用 `status_bar_height` 这类硬编码高度。
 

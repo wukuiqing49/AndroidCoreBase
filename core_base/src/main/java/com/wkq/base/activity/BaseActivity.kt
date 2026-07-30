@@ -146,7 +146,11 @@ abstract class BaseActivity<VB : ViewBinding> : PermissionsActivity() {
      */
     protected open fun shouldApplyGestureInset(): Boolean = true
 
-    protected open fun shouldApplyHorizontalInset(): Boolean = false
+    /**
+     * Keeps regular content clear of landscape navigation bars and display cutouts. Override with
+     * false only when the page owns its horizontal edge-to-edge layout and inset handling.
+     */
+    protected open fun shouldApplyHorizontalInset(): Boolean = true
 
     /**
      * Enable for pages whose content behind a three-button navigation bar cannot guarantee icon

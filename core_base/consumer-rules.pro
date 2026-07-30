@@ -28,10 +28,6 @@
 
 # DialogKit is the public dialog facade exported by core_base. CommonDialog and LoadingDialog are
 # compatibility facades that forward into DialogKit, so host apps can migrate gradually.
-# XPopup is created from code, but keeping its runtime classes avoids integration issues when host
-# apps enable aggressive shrinking.
--keep class com.lxj.xpopup.** { *; }
--dontwarn com.lxj.xpopup.**
 
 # Keep dialog facade method names stable for Java callers and binary consumers of published AARs.
 -keep class com.wkq.base.dialog.DialogKit { *; }

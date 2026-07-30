@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.Editable
@@ -96,7 +97,9 @@ class VerifyCodeInputView @JvmOverloads constructor(
     var onCodeCompleteListener: ((code: String) -> Unit)? = null
 
     init {
-        importantForAutofill = IMPORTANT_FOR_AUTOFILL_NO
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            importantForAutofill = IMPORTANT_FOR_AUTOFILL_NO
+        }
         isSaveEnabled = true
         descendantFocusability = FOCUS_AFTER_DESCENDANTS
 

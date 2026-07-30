@@ -19,7 +19,7 @@ import com.wkq.base.databinding.DialogCommonPopBinding
  * Supports complete customizations of text values, font colors, button backgrounds,
  * click listeners, and custom content layouts.
  */
-class CommonCenterPopupView(
+internal class CommonCenterPopupView(
     context: Context,
     var titleText: CharSequence? = null,
     var contentText: CharSequence? = null,

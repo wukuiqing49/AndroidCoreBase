@@ -218,8 +218,12 @@ if (-not $statusAfter) {
     throw "No changes to release."
 }
 
-Run "git add README.md docs/core_base_network_release.md core_base/version.properties core_base/build.gradle core_base/docs/core_base_publish.md core_base/docs/core_base_usage.md app/build.gradle gradle/libs.versions.toml jitpack.yml scripts/release-core-base.ps1"
-Run "git add core_base/src/main"
+if ($AllowDirty) {
+    Run "git add -A -- ."
+} else {
+    Run "git add README.md docs/core_base_network_release.md core_base/version.properties core_base/build.gradle core_base/docs/core_base_publish.md core_base/docs/core_base_usage.md app/build.gradle gradle/libs.versions.toml jitpack.yml scripts/release-core-base.ps1"
+    Run "git add core_base/src/main"
+}
 Run "git commit -m `"release core_base $Version`""
 Run "git tag $tag"
 

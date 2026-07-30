@@ -13,6 +13,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.lxj.xpopup.XPopup
 import com.lxj.xpopup.core.CenterPopupView
+import com.lxj.xpopup.enums.PopupInsetMode
 import com.wkq.base.R
 
 object DialogKit {
@@ -303,6 +304,7 @@ object DialogKit {
             .enableDrag(options.enableDrag)
             .isLightStatusBar(options.lightStatusBar)
             .isDestroyOnDismiss(options.destroyOnDismiss)
+            .popupInsetMode(PopupInsetMode.SafeArea)
 
         options.atView?.let { builder = builder.atView(it) }
         options.watchView?.let { builder = builder.watchView(it) }

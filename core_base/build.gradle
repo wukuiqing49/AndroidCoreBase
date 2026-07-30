@@ -52,9 +52,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.smartrefresh.layout.kernel)
-    api(libs.xpopup) {
-        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-android-extensions-runtime'
-    }
+    implementation(libs.xpopup)
     implementation(libs.smartrefresh.header.classics)
     
     testImplementation 'junit:junit:4.13.2'

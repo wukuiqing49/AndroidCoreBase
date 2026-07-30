@@ -38,7 +38,7 @@
 脚本不会覆盖已经存在的 tag。推送完成后打开 JitPack 页面触发构建：
 
 ```text
-https://jitpack.io/#wukuiqing49/AndroidCoreBase/v1.2.1
+https://jitpack.io/#wukuiqing49/AndroidCoreBase/v1.3.0
 ```
 
 完整说明见 [`core_base/docs/core_base_publish.md`](core_base/docs/core_base_publish.md)。
@@ -72,7 +72,7 @@ dependencyResolutionManagement {
 
 ```gradle
 dependencies {
-    implementation "com.github.wukuiqing49:AndroidCoreBase:v1.2.1"
+    implementation "com.github.wukuiqing49:AndroidCoreBase:v1.3.0"
 }
 ```
 
@@ -85,7 +85,7 @@ dependencies {
 ```powershell
 .\gradlew.bat :core_base:compileDebugKotlin
 .\gradlew.bat :app:assembleDebug
-.\gradlew.bat :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.wukuiqing49" "-PPOM_ARTIFACT_ID=AndroidCoreBase" "-PPOM_VERSION=v1.2.1" "-PGITHUB_REPOSITORY=wukuiqing49/AndroidCoreBase"
+.\gradlew.bat :core_base:publishReleasePublicationToMavenLocal "-PPOM_GROUP_ID=com.github.wukuiqing49" "-PPOM_ARTIFACT_ID=AndroidCoreBase" "-PPOM_VERSION=v1.3.0" "-PGITHUB_REPOSITORY=wukuiqing49/AndroidCoreBase"
 ```
 
 ## 使用说明

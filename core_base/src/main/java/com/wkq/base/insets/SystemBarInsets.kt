@@ -111,7 +111,9 @@ object SystemBarInsets {
                 includeGestureInset = includeBottom && includeGestureInset
             )
             val horizontalInset = if (includeHorizontal) {
-                insets.resolveHorizontalInset(includeGestureInset)
+                // Regular content only needs safe-drawing insets. Edge gestures are handled by
+                // applyHorizontalGestureInset() for controls that actually sit on a screen edge.
+                insets.resolveHorizontalInset(includeGestureInset = false)
             } else {
                 null
             }
